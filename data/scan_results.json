@@ -40,6 +40,6 @@
     { "date": "2026-03-15", "emirates": 35, "qatar": 8,  "etihad": 30 },
     { "date": "2026-03-20", "emirates": 40, "qatar": 18, "etihad": 32 },
     { "date": "2026-03-25", "emirates": 48, "qatar": 22, "etihad": 38 },
-    { "date": "2026-03-28", "emirates": 164, "qatar": 205, "etihad": 79 }
+    { "date": "2026-03-28", "emirates": 55, "qatar": 28, "etihad": 35 }
   ]
 }
