@@ -17,24 +17,30 @@ $hdrs = @{ "x-rapidapi-host" = $rapidHost; "x-rapidapi-key" = $RapidApiKey }
 # Dubai time = UTC+4
 $now = [System.DateTime]::UtcNow.AddHours(4)
 $todayStart = $now.Date.ToString("yyyy-MM-ddT00:00")
-$midday = $now.Date.AddHours(12).ToString("yyyy-MM-ddT12:00")
+$todayMidday = $now.Date.AddHours(12).ToString("yyyy-MM-ddT12:00")
 $tomorrowStart = $now.Date.AddDays(1).ToString("yyyy-MM-ddT00:00")
+$tomorrowMidday = $now.Date.AddDays(1).AddHours(12).ToString("yyyy-MM-ddT12:00")
 
-# Two 12h windows to capture full 24h day
+# Three 12h windows to capture today + tomorrow (36h total)
 $w1s = $todayStart
-$w1e = $midday
-$w2s = $midday
+$w1e = $todayMidday
+$w2s = $todayMidday
 $w2e = $tomorrowStart
+$w3s = $tomorrowStart
+$w3e = $tomorrowMidday
 
-Write-Host "Scanning full day: $w1s to $w2e (two 12h windows)"
+Write-Host "Scanning 36h: $w1s to $w3e (three 12h windows, capturing today + tomorrow)"
 
 $queries = @(
   @{ ap="DXB"; id="emirates"; pfx="EK"; s=$w1s; e=$w1e },
   @{ ap="DXB"; id="emirates"; pfx="EK"; s=$w2s; e=$w2e },
+  @{ ap="DXB"; id="emirates"; pfx="EK"; s=$w3s; e=$w3e },
   @{ ap="DOH"; id="qatar";    pfx="QR"; s=$w1s; e=$w1e },
   @{ ap="DOH"; id="qatar";    pfx="QR"; s=$w2s; e=$w2e },
+  @{ ap="DOH"; id="qatar";    pfx="QR"; s=$w3s; e=$w3e },
   @{ ap="AUH"; id="etihad";   pfx="EY"; s=$w1s; e=$w1e },
-  @{ ap="AUH"; id="etihad";   pfx="EY"; s=$w2s; e=$w2e }
+  @{ ap="AUH"; id="etihad";   pfx="EY"; s=$w2s; e=$w2e },
+  @{ ap="AUH"; id="etihad";   pfx="EY"; s=$w3s; e=$w3e }
 )
 
 $byAirline = @{ emirates=@(); qatar=@(); etihad=@() }
@@ -144,7 +150,7 @@ $json = @"
 {
   "lastScan": "$timestamp",
   "scanVersion": 3,
-  "dataNote": "Live flight data from AeroDataBox API. Full 24h day (00:00–24:00 SGT) captured in two 12h windows. Grouped by actual flight date. Scans every 12h.",
+  "dataNote": "Live flight data from AeroDataBox API. 36h window (today 00:00 – tomorrow 12:00 SGT) captured in three 12h windows. Grouped by actual flight date. Scans every 12h.",
   "airlines": [
     {
       "id": "emirates", "name": "Emirates", "iata": "EK", "hub": "DXB",
