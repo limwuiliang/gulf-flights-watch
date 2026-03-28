@@ -22,8 +22,7 @@
     tbody tr:hover td { background: #eef6f1; }
     #chart-section canvas { max-height: 320px; }
     /* Mobile-friendly table card view */
-    @media (max-width: 640px) {
-      .table-scroll-wrapper { max-height: none !important; overflow-y: visible !important; }
+    @media (max-width: 640px) { .table-scroll-wrapper { max-height: 400px !important; overflow-y: auto !important; } { max-height: none !important; overflow-y: visible !important; }
       .flight-table thead { display: none; }
       .flight-table tbody tr {
         display: block;
