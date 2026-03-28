@@ -1,6 +1,6 @@
 # Gulf Flights Watch — AeroDataBox scan script
 # Pulls live departures from DXB, DOH, AUH for EK, QR, EY
-# Appends to flightVolumeHistory and pushes to GitHub
+# Groups by actual flight date and appends to flightVolumeHistory
 
 param(
   [string]$RapidApiKey  = "YOUR_RAPIDAPI_KEY_HERE",
@@ -15,7 +15,6 @@ $hdrs = @{ "x-rapidapi-host" = $rapidHost; "x-rapidapi-key" = $RapidApiKey }
 
 # Dubai time = UTC+4
 $now = [System.DateTime]::UtcNow.AddHours(4)
-$todayDate = $now.ToString("yyyy-MM-dd")
 $w1s = $now.ToString("yyyy-MM-ddTHH:mm")
 $w1e = $now.AddHours(12).ToString("yyyy-MM-ddTHH:mm")
 $w2s = $now.AddHours(12).ToString("yyyy-MM-ddTHH:mm")
@@ -61,9 +60,6 @@ foreach ($q in $queries) {
 }
 
 $timestamp = [System.DateTime]::UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ")
-$ekCount = $byAirline.emirates.Count
-$qrCount = $byAirline.qatar.Count
-$eyCount = $byAirline.etihad.Count
 
 $ekJson  = ($byAirline.emirates | ConvertTo-Json -Depth 4 -Compress)
 $qrJson  = ($byAirline.qatar    | ConvertTo-Json -Depth 4 -Compress)
@@ -72,46 +68,83 @@ if ($byAirline.emirates.Count -eq 1) { $ekJson = "[$ekJson]" }
 if ($byAirline.qatar.Count -eq 1)    { $qrJson = "[$qrJson]" }
 if ($byAirline.etihad.Count -eq 1)   { $eyJson = "[$eyJson]" }
 
-# Load existing JSON to append to history
+# Group flights by actual departure date for chart
+$flightsByDate = @{}
+foreach ($airline in @('emirates', 'qatar', 'etihad')) {
+  foreach ($flight in $byAirline[$airline]) {
+    $date = $flight.date
+    if (-not $flightsByDate[$date]) {
+      $flightsByDate[$date] = @{ emirates = 0; qatar = 0; etihad = 0 }
+    }
+    $flightsByDate[$date][$airline] += 1
+  }
+}
+
+Write-Host "Flights by date:"
+foreach ($date in ($flightsByDate.Keys | Sort-Object)) {
+  Write-Host "  $date: EK=$($flightsByDate[$date].emirates) QR=$($flightsByDate[$date].qatar) EY=$($flightsByDate[$date].etihad)"
+}
+
+# Load existing JSON and merge history
 $existingPath = "$RepoPath\data\scan_results.json"
-$historyEntry = "    { `"date`": `"$todayDate`", `"emirates`": $ekCount, `"qatar`": $qrCount, `"etihad`": $eyCount }"
-$historyArray = "[$historyEntry]"
+$newHistoryEntries = @()
 
 if (Test-Path $existingPath) {
   try {
     $existing = [System.IO.File]::ReadAllText($existingPath, [System.Text.Encoding]::UTF8)
     $json_obj = $existing | ConvertFrom-Json
-    if ($null -ne $json_obj.flightVolumeHistory) {
-      # Check if today already exists (don't duplicate)
-      $todayExists = $json_obj.flightVolumeHistory | Where-Object { $_.date -eq $todayDate }
-      if ($null -eq $todayExists) {
-        # Append new entry
-        $json_obj.flightVolumeHistory += [PSCustomObject]@{
-          date    = $todayDate
-          emirates = $ekCount
-          qatar    = $qrCount
-          etihad  = $eyCount
+    
+    # Start with existing history
+    $mergedHistory = @($json_obj.flightVolumeHistory)
+    
+    # Add/update entries for each date with flights
+    foreach ($date in ($flightsByDate.Keys | Sort-Object)) {
+      $existingEntry = $mergedHistory | Where-Object { $_.date -eq $date }
+      if ($null -eq $existingEntry) {
+        $mergedHistory += [PSCustomObject]@{
+          date    = $date
+          emirates = $flightsByDate[$date].emirates
+          qatar    = $flightsByDate[$date].qatar
+          etihad  = $flightsByDate[$date].etihad
         }
       } else {
-        # Update today's entry
-        $json_obj.flightVolumeHistory | Where-Object { $_.date -eq $todayDate } | ForEach-Object {
-          $_.emirates = $ekCount
-          $_.qatar = $qrCount
-          $_.etihad = $eyCount
-        }
+        $existingEntry.emirates = $flightsByDate[$date].emirates
+        $existingEntry.qatar = $flightsByDate[$date].qatar
+        $existingEntry.etihad = $flightsByDate[$date].etihad
       }
-      $historyArray = ($json_obj.flightVolumeHistory | ConvertTo-Json -Depth 2 -Compress)
     }
+    
+    $historyArray = ($mergedHistory | ConvertTo-Json -Depth 2 -Compress)
   } catch {
-    Write-Host "Warning: Could not parse existing history, starting fresh"
+    Write-Host "Warning: Could not parse existing history, using current scan only"
+    $historyEntries = foreach ($date in ($flightsByDate.Keys | Sort-Object)) {
+      [PSCustomObject]@{
+        date    = $date
+        emirates = $flightsByDate[$date].emirates
+        qatar    = $flightsByDate[$date].qatar
+        etihad  = $flightsByDate[$date].etihad
+      }
+    }
+    $historyArray = ($historyEntries | ConvertTo-Json -Depth 2 -Compress)
   }
+} else {
+  # Fresh history from scan
+  $historyEntries = foreach ($date in ($flightsByDate.Keys | Sort-Object)) {
+    [PSCustomObject]@{
+      date    = $date
+      emirates = $flightsByDate[$date].emirates
+      qatar    = $flightsByDate[$date].qatar
+      etihad  = $flightsByDate[$date].etihad
+    }
+  }
+  $historyArray = ($historyEntries | ConvertTo-Json -Depth 2 -Compress)
 }
 
 $json = @"
 {
   "lastScan": "$timestamp",
   "scanVersion": 3,
-  "dataNote": "Live flight data from AeroDataBox API. Today + 24h window from DXB, DOH, AUH. Scans every 12h.",
+  "dataNote": "Live flight data from AeroDataBox API. Grouped by actual flight date. Scans every 12h.",
   "airlines": [
     {
       "id": "emirates", "name": "Emirates", "iata": "EK", "hub": "DXB",
@@ -146,13 +179,13 @@ $json = @"
 "@
 
 [System.IO.File]::WriteAllText("$RepoPath\data\scan_results.json", $json, [System.Text.Encoding]::UTF8)
-Write-Host "scan_results.json written: EK=$ekCount QR=$qrCount EY=$eyCount (history appended)"
+Write-Host "scan_results.json written with date-grouped history"
 
 # Git push
 Set-Location $RepoPath
 git remote set-url origin "https://${GithubUser}:${GithubToken}@github.com/${GithubUser}/${RepoName}.git"
 git add data/scan_results.json
-git commit -m "scan: live update $timestamp (EK=$ekCount QR=$qrCount EY=$eyCount)"
+git commit -m "scan: date-grouped update $timestamp"
 git push origin main
 git remote set-url origin "https://github.com/${GithubUser}/${RepoName}.git"
 Write-Host "Pushed to GitHub."
