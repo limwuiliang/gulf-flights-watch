@@ -1,7 +1,7 @@
 ﻿{
     "lastScan":  "2026-03-28T02:05:00Z",
     "scanVersion":  2,
-    "dataNote":  "Flight numbers and routes based on known airline numbering conventions. Qatar destinations confirmed from official advisory (valid to Apr 15 2026). Departure times link to live FlightAware. Emirates on reduced schedule â€” not all routes operating daily.",
+    "dataNote":  "Flight numbers and routes based on known airline numbering conventions. Qatar destinations confirmed from official advisory (valid to Apr 15 2026). Departure times link to live FlightAware. Emirates on reduced schedule "” not all routes operating daily.",
     "airlines":  [
                      {
                          "id":  "emirates",
@@ -13,7 +13,7 @@
                          "statusLabel":  "Reduced Schedule",
                          "source":  "https://www.emirates.com/us/english/help/travel-updates/",
                          "lastUpdated":  "2026-03-26",
-                         "summary":  "Operating a reduced flight schedule following partial reopening of regional airspace. Travel waiver in effect for Feb 28 â€“ Apr 15 travelers. Rebooking allowed to May 31. Up to 9 free changes. City check-in points in Dubai temporarily closed.",
+                         "summary":  "Operating a reduced flight schedule following partial reopening of regional airspace. Travel waiver in effect for Feb 28 "“ Apr 15 travelers. Rebooking allowed to May 31. Up to 9 free changes. City check-in points in Dubai temporarily closed.",
                          "advisory":  {
                                           "affectedDates":  {
                                                                 "from":  "2026-02-28",
@@ -33,7 +33,7 @@
                                              "time":  "~22:00",
                                              "category":  "Standard",
                                              "priceUSD":  null,
-                                             "note":  "Verify operating â€” reduced schedule. 4Ã— weekly est.",
+                                             "note":  "Verify operating "” reduced schedule. 4x weekly est.",
                                              "date":  "2026-03-28"
                                          },
                                          {
@@ -69,7 +69,7 @@
                                              "time":  "~21:30",
                                              "category":  "Standard",
                                              "priceUSD":  null,
-                                             "note":  "Reduced frequency â€” verify.",
+                                             "note":  "Reduced frequency "” verify.",
                                              "date":  "2026-03-28"
                                          },
                                          {
@@ -153,7 +153,7 @@
                                              "time":  "~10:00",
                                              "category":  "Standard",
                                              "priceUSD":  null,
-                                             "note":  "Verify â€” limited slots.",
+                                             "note":  "Verify "” limited slots.",
                                              "date":  "2026-03-28"
                                          },
                                          {
@@ -276,7 +276,7 @@
                          "statusLabel":  "Restricted / Limited Corridor",
                          "source":  "https://www.qatarairways.com/en/rebooking-options.html",
                          "lastUpdated":  "2026-03-26",
-                         "summary":  "Resuming expanded network via dedicated flight corridors. 90+ destinations restored as of Mar 26 update. Schedule valid to Apr 15. Waiver extended: bookings Feb 28â€“Jun 15 eligible for free changes or refund. Rebooking to Oct 31.",
+                         "summary":  "Resuming expanded network via dedicated flight corridors. 90+ destinations restored as of Mar 26 update. Schedule valid to Apr 15. Waiver extended: bookings Feb 28"“Jun 15 eligible for free changes or refund. Rebooking to Oct 31.",
                          "advisory":  {
                                           "affectedDates":  {
                                                                 "from":  "2026-02-28",

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -291,15 +291,11 @@
           ? `<span class="font-mono">${f.origin}</span><span class="text-gray-400 mx-0.5">→</span><span class="font-mono">${f.transit}</span><span class="text-gray-400 mx-0.5">→</span><span class="font-mono">${f.destination}</span>`
           : `<span class="font-mono">${f.origin}</span><span class="text-gray-400 mx-0.5">→</span><span class="font-mono">${f.destination}</span>`;
         const evacIcon  = f.category.includes('Evacuation') ? ' 🚨' : '';
-        const FR24_URLS = {
-          'EK': 'https://www.flightradar24.com/data/airlines/ek-uae',
-          'QR': 'https://www.flightradar24.com/data/airlines/qr-qtr',
-          'EY': 'https://www.flightradar24.com/data/airlines/ey-etd',
-        };
-        const faUrl     = FR24_URLS[a.iata] || null;
-        const trackLink = faUrl
-          ? `<a href="${faUrl}" target="_blank" rel="noopener" class="text-blue-600 hover:underline">FR24 ↗</a>`
-          : '<span class="text-gray-300">—</span>';
+        const flightSlug = f.flightNumber.replace(/[^A-Z0-9]/gi, '').toLowerCase();
+        const fr24Url    = `https://www.flightradar24.com/data/flights/${flightSlug}`;
+        const trackLink  = f.flightNumber.includes('-')
+          ? '<span class="text-gray-300">-</span>'
+          : `<a href="${fr24Url}" target="_blank" rel="noopener" class="text-blue-600 hover:underline">FR24 ↗</a>`;
         const dateLabel = f.date || '—';
 
         return `
