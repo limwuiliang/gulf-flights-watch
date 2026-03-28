@@ -257,7 +257,8 @@
             !r.flight.destination.toLowerCase().includes(dest) &&
             !r.flight.origin.toLowerCase().includes(dest) &&
             !(r.flight.destinationName || '').toLowerCase().includes(dest)) return false;
-        if (date && r.flight.date && r.flight.date !== date) return false;
+        const effectiveDate = r.flight.date || scanData.lastScan.slice(0, 10);
+        if (date && effectiveDate !== date) return false;
         return true;
       });
 
