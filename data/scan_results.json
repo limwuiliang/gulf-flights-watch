@@ -32,14 +32,13 @@
     }
   ],
   "flightVolumeHistory": [
-    { "date": "2026-02-27", "emirates": 85, "qatar": 92, "etihad": 78 },
-    { "date": "2026-02-28", "emirates": 60, "qatar": 30, "etihad": 55 },
-    { "date": "2026-03-01", "emirates": 45, "qatar": 15, "etihad": 40 },
-    { "date": "2026-03-05", "emirates": 38, "qatar": 12, "etihad": 35 },
-    { "date": "2026-03-10", "emirates": 32, "qatar": 10, "etihad": 28 },
-    { "date": "2026-03-15", "emirates": 35, "qatar": 8,  "etihad": 30 },
-    { "date": "2026-03-20", "emirates": 40, "qatar": 18, "etihad": 32 },
-    { "date": "2026-03-25", "emirates": 48, "qatar": 22, "etihad": 38 },
-    { "date": "2026-03-28", "emirates": 55, "qatar": 28, "etihad": 35 }
+    { "date": "2026-03-28", "emirates": 164, "qatar": 205, "etihad": 79 },
+    { "date": "2026-03-29", "emirates": null, "qatar": null, "etihad": null },
+    { "date": "2026-03-30", "emirates": null, "qatar": null, "etihad": null },
+    { "date": "2026-03-31", "emirates": null, "qatar": null, "etihad": null },
+    { "date": "2026-04-01", "emirates": null, "qatar": null, "etihad": null },
+    { "date": "2026-04-02", "emirates": null, "qatar": null, "etihad": null },
+    { "date": "2026-04-03", "emirates": null, "qatar": null, "etihad": null },
+    { "date": "2026-04-04", "emirates": null, "qatar": null, "etihad": null }
   ]
 }
