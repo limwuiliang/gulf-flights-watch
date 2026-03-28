@@ -1,7 +1,7 @@
-# Gulf Flights Watch — AeroDataBox scan script
-# Pulls live departures from DXB, DOH, AUH for EK, QR, EY
-# Queries full 24h day (00:00–24:00 SGT) in two 12h windows to capture all flights
-# Groups by actual departure date and appends to flightVolumeHistory
+# Gulf Flights Watch — AeroDataBox scan script (2x daily)
+# Captures 6-day window with flight status (Expected/Departed)
+# 12 windows × 3 airports = 36 API calls per scan (~36 units)
+# 2 scans/day = ~72 units/day, well within 600/month free tier
 
 param(
   [string]$RapidApiKey  = "YOUR_RAPIDAPI_KEY_HERE",
@@ -14,33 +14,18 @@ param(
 $rapidHost = "aerodatabox.p.rapidapi.com"
 $hdrs = @{ "x-rapidapi-host" = $rapidHost; "x-rapidapi-key" = $RapidApiKey }
 
-# Dubai time = UTC+4
 $now = [System.DateTime]::UtcNow.AddHours(4)
-$d0Start = $now.Date.ToString("yyyy-MM-ddT00:00")
-$d0Mid   = $now.Date.AddHours(12).ToString("yyyy-MM-ddT12:00")
-$d1Start = $now.Date.AddDays(1).ToString("yyyy-MM-ddT00:00")
-$d1Mid   = $now.Date.AddDays(1).AddHours(12).ToString("yyyy-MM-ddT12:00")
-$d2Start = $now.Date.AddDays(2).ToString("yyyy-MM-ddT00:00")
-$d2Mid   = $now.Date.AddDays(2).AddHours(12).ToString("yyyy-MM-ddT12:00")
-$d3Start = $now.Date.AddDays(3).ToString("yyyy-MM-ddT00:00")
-$d3Mid   = $now.Date.AddDays(3).AddHours(12).ToString("yyyy-MM-ddT12:00")
-$d4Start = $now.Date.AddDays(4).ToString("yyyy-MM-ddT00:00")
-$d4Mid   = $now.Date.AddDays(4).AddHours(12).ToString("yyyy-MM-ddT12:00")
 
-# Nine 12h windows to capture 5 days (today through day 4)
-$windows = @(
-  @{ s=$d0Start; e=$d0Mid },
-  @{ s=$d0Mid; e=$d1Start },
-  @{ s=$d1Start; e=$d1Mid },
-  @{ s=$d1Mid; e=$d2Start },
-  @{ s=$d2Start; e=$d2Mid },
-  @{ s=$d2Mid; e=$d3Start },
-  @{ s=$d3Start; e=$d3Mid },
-  @{ s=$d3Mid; e=$d4Start },
-  @{ s=$d4Start; e=$d4Mid }
-)
+# Build 6 days of 12h windows (12 total)
+$windows = @()
+for ($i = 0; $i -lt 6; $i++) {
+  $dayStart = $now.Date.AddDays($i).ToString("yyyy-MM-ddT00:00")
+  $dayMid   = $now.Date.AddDays($i).AddHours(12).ToString("yyyy-MM-ddT12:00")
+  $windows += @{ s=$dayStart; e=$dayMid }
+  $windows += @{ s=$dayMid; e=$now.Date.AddDays($i+1).ToString("yyyy-MM-ddT00:00") }
+}
 
-Write-Host "Scanning 5 days: $d0Start to $d4Mid (nine 12h windows)"
+Write-Host "Scanning 6 days: $($now.Date.ToString('yyyy-MM-dd')) to $(($now.Date.AddDays(5)).ToString('yyyy-MM-dd')) (12 windows × 3 airports = 36 API calls)"
 
 $queries = @()
 foreach ($window in $windows) {
@@ -52,32 +37,37 @@ foreach ($window in $windows) {
 }
 
 $byAirline = @{ emirates=@(); qatar=@(); etihad=@() }
-$flightsByDate = @{}
-$seenFlights = @{}  # Deduplicate by flight number + date
+$flightsByDateStatus = @{}  # {date}{status} -> count
+$seenFlights = @{}
 
 foreach ($q in $queries) {
-  Start-Sleep -Seconds 3
+  Start-Sleep -Seconds 2
   $url = "https://aerodatabox.p.rapidapi.com/flights/airports/iata/$($q.ap)/$($q.s)/$($q.e)?direction=Departure&withLeg=true&withCancelled=false&withCodeshared=false&withCargo=false&withPrivate=false"
   try {
     $r = Invoke-RestMethod -Uri $url -Headers $hdrs -Method Get
     $filtered = $r.departures | Where-Object { ($_.number -replace '\s','').StartsWith($q.pfx) }
-    Write-Host "$($q.ap) $($q.s): $($filtered.Count) $($q.pfx) flights"
     foreach ($f in $filtered) {
       $dep = $f.departure.scheduledTime.local
       $d = $dep.Substring(0,10)
       $fn = ($f.number -replace '\s','')
+      $status = $f.status  # "Expected", "Departed", etc.
       $key = "$fn-$d"
       
-      # Skip if already seen (deduplication)
-      if ($seenFlights[$key]) {
-        continue
-      }
+      if ($seenFlights[$key]) { continue }
       $seenFlights[$key] = $true
       
-      if (-not $flightsByDate[$d]) {
-        $flightsByDate[$d] = @{ emirates = 0; qatar = 0; etihad = 0 }
+      # Track by date + status for chart
+      if (-not $flightsByDateStatus[$d]) {
+        $flightsByDateStatus[$d] = @{ 
+          emirates_expected = 0; emirates_departed = 0
+          qatar_expected = 0; qatar_departed = 0
+          etihad_expected = 0; etihad_departed = 0
+        }
       }
-      $flightsByDate[$d][$q.id] += 1
+      $statusKey = "$($q.id)_$($status.ToLower())"
+      $flightsByDateStatus[$d][$statusKey] += 1
+      
+      # Add to flights array
       $byAirline[$q.id] += [ordered]@{
         flightNumber    = $fn
         origin          = $q.ap
@@ -86,14 +76,14 @@ foreach ($q in $queries) {
         destinationName = "$($f.arrival.airport.name)"
         date            = $d
         time            = $dep.Substring(11,5)
-        status          = "$($f.status)"
+        status          = $status
         category        = "Standard"
         priceUSD        = $null
-        note            = "Live data via AeroDataBox. Status: $($f.status)"
+        note            = "Live data via AeroDataBox. Status: $status"
       }
     }
   } catch {
-    Write-Host "$($q.ap) error: $($_.Exception.Message)"
+    Write-Host "$($q.ap) $($q.s) error: $($_.Exception.Message)" -ForegroundColor Yellow
   }
 }
 
@@ -105,60 +95,28 @@ if ($byAirline.emirates.Count -eq 1) { $ekJson = "[$ekJson]" }
 if ($byAirline.qatar.Count -eq 1)    { $qrJson = "[$qrJson]" }
 if ($byAirline.etihad.Count -eq 1)   { $eyJson = "[$eyJson]" }
 
-# Build history from grouped dates
-$sortedDates = $flightsByDate.Keys | Sort-Object
+# Build history with Expected + Departed
+$sortedDates = $flightsByDateStatus.Keys | Sort-Object
+Write-Host "`nFlight counts by date (Expected + Departed):"
 $historyLines = @()
 foreach ($d in $sortedDates) {
-  $ek = $flightsByDate[$d].emirates
-  $qr = $flightsByDate[$d].qatar
-  $ey = $flightsByDate[$d].etihad
-  $historyLines += "    { ""date"": ""$d"", ""emirates"": $ek, ""qatar"": $qr, ""etihad"": $ey }"
-  Write-Host "  $d : EK=$ek QR=$qr EY=$ey"
+  $ek_exp = $flightsByDateStatus[$d].emirates_expected
+  $ek_dep = $flightsByDateStatus[$d].emirates_departed
+  $qr_exp = $flightsByDateStatus[$d].qatar_expected
+  $qr_dep = $flightsByDateStatus[$d].qatar_departed
+  $ey_exp = $flightsByDateStatus[$d].etihad_expected
+  $ey_dep = $flightsByDateStatus[$d].etihad_departed
+  
+  $historyLines += "    { ""date"": ""$d"", ""emirates_expected"": $ek_exp, ""emirates_departed"": $ek_dep, ""qatar_expected"": $qr_exp, ""qatar_departed"": $qr_dep, ""etihad_expected"": $ey_exp, ""etihad_departed"": $ey_dep }"
+  Write-Host "  $d : EK=$($ek_exp+$ek_dep) (exp:$ek_exp dep:$ek_dep) QR=$($qr_exp+$qr_dep) (exp:$qr_exp dep:$qr_dep) EY=$($ey_exp+$ey_dep) (exp:$ey_exp dep:$ey_dep)"
 }
 $historyArray = "[`n" + ($historyLines -join ",`n") + "`n  ]"
-
-# Load existing JSON and merge history
-$existingPath = "$RepoPath\data\scan_results.json"
-$mergedHistory = @()
-
-if (Test-Path $existingPath) {
-  try {
-    $existing = [System.IO.File]::ReadAllText($existingPath, [System.Text.Encoding]::UTF8)
-    $json_obj = $existing | ConvertFrom-Json
-    $mergedHistory = @($json_obj.flightVolumeHistory)
-  } catch {
-    Write-Host "Warning: Could not parse existing history"
-  }
-}
-
-# Update or add today's entries
-foreach ($d in $sortedDates) {
-  $ek = $flightsByDate[$d].emirates
-  $qr = $flightsByDate[$d].qatar
-  $ey = $flightsByDate[$d].etihad
-  
-  $existing = $mergedHistory | Where-Object { $_.date -eq $d }
-  if ($null -eq $existing) {
-    $mergedHistory += [PSCustomObject]@{
-      date    = $d
-      emirates = $ek
-      qatar    = $qr
-      etihad  = $ey
-    }
-  } else {
-    $existing.emirates = $ek
-    $existing.qatar = $qr
-    $existing.etihad = $ey
-  }
-}
-
-$historyArray = ($mergedHistory | Sort-Object date | ConvertTo-Json -Depth 2 -Compress)
 
 $json = @"
 {
   "lastScan": "$timestamp",
-  "scanVersion": 3,
-  "dataNote": "Live flight data from AeroDataBox API. 5-day window (today 00:00 – day 4 12:00 SGT) captured in nine 12h windows. Grouped by actual flight date. Scans every 12h.",
+  "scanVersion": 4,
+  "dataNote": "Live flight data from AeroDataBox API. 6-day window (today through day 5) captured in 12 × 12h windows. Status: Expected vs Departed. Scans every 12h (2x/day).",
   "airlines": [
     {
       "id": "emirates", "name": "Emirates", "iata": "EK", "hub": "DXB",
@@ -193,13 +151,13 @@ $json = @"
 "@
 
 [System.IO.File]::WriteAllText("$RepoPath\data\scan_results.json", $json, [System.Text.Encoding]::UTF8)
-Write-Host "scan_results.json written with full 24h day coverage"
+Write-Host "`nDone - 6-day scan with status tracking"
 
 # Git push
 Set-Location $RepoPath
 git remote set-url origin "https://${GithubUser}:${GithubToken}@github.com/${GithubUser}/${RepoName}.git"
 git add data/scan_results.json
-git commit -m "scan: full 24h day coverage (00:00–24:00 SGT, deduped) $timestamp"
+git commit -m "scan: 6-day window with Expected/Departed status tracking $timestamp"
 git push origin main
 git remote set-url origin "https://github.com/${GithubUser}/${RepoName}.git"
 Write-Host "Pushed to GitHub."
