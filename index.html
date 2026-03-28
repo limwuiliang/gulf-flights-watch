@@ -291,14 +291,14 @@
           ? `<span class="font-mono">${f.origin}</span><span class="text-gray-400 mx-0.5">→</span><span class="font-mono">${f.transit}</span><span class="text-gray-400 mx-0.5">→</span><span class="font-mono">${f.destination}</span>`
           : `<span class="font-mono">${f.origin}</span><span class="text-gray-400 mx-0.5">→</span><span class="font-mono">${f.destination}</span>`;
         const evacIcon  = f.category.includes('Evacuation') ? ' 🚨' : '';
-        const FA_AIRLINE_URLS = {
-          'EK': 'https://www.flightaware.com/live/airline/UAE',
-          'QR': 'https://www.flightaware.com/live/airline/QTR',
-          'EY': 'https://www.flightaware.com/live/airline/ETD',
+        const FR24_URLS = {
+          'EK': 'https://www.flightradar24.com/data/airlines/ek-uae',
+          'QR': 'https://www.flightradar24.com/data/airlines/qr-qtr',
+          'EY': 'https://www.flightradar24.com/data/airlines/ey-etd',
         };
-        const faUrl     = FA_AIRLINE_URLS[a.iata] || null;
+        const faUrl     = FR24_URLS[a.iata] || null;
         const trackLink = faUrl
-          ? `<a href="${faUrl}" target="_blank" rel="noopener" class="text-blue-600 hover:underline">Live map ↗</a>`
+          ? `<a href="${faUrl}" target="_blank" rel="noopener" class="text-blue-600 hover:underline">FR24 ↗</a>`
           : '<span class="text-gray-300">—</span>';
         const dateLabel = f.date || '—';
 
