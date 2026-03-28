@@ -16,32 +16,40 @@ $hdrs = @{ "x-rapidapi-host" = $rapidHost; "x-rapidapi-key" = $RapidApiKey }
 
 # Dubai time = UTC+4
 $now = [System.DateTime]::UtcNow.AddHours(4)
-$todayStart = $now.Date.ToString("yyyy-MM-ddT00:00")
-$todayMidday = $now.Date.AddHours(12).ToString("yyyy-MM-ddT12:00")
-$tomorrowStart = $now.Date.AddDays(1).ToString("yyyy-MM-ddT00:00")
-$tomorrowMidday = $now.Date.AddDays(1).AddHours(12).ToString("yyyy-MM-ddT12:00")
+$d0Start = $now.Date.ToString("yyyy-MM-ddT00:00")
+$d0Mid   = $now.Date.AddHours(12).ToString("yyyy-MM-ddT12:00")
+$d1Start = $now.Date.AddDays(1).ToString("yyyy-MM-ddT00:00")
+$d1Mid   = $now.Date.AddDays(1).AddHours(12).ToString("yyyy-MM-ddT12:00")
+$d2Start = $now.Date.AddDays(2).ToString("yyyy-MM-ddT00:00")
+$d2Mid   = $now.Date.AddDays(2).AddHours(12).ToString("yyyy-MM-ddT12:00")
+$d3Start = $now.Date.AddDays(3).ToString("yyyy-MM-ddT00:00")
+$d3Mid   = $now.Date.AddDays(3).AddHours(12).ToString("yyyy-MM-ddT12:00")
+$d4Start = $now.Date.AddDays(4).ToString("yyyy-MM-ddT00:00")
+$d4Mid   = $now.Date.AddDays(4).AddHours(12).ToString("yyyy-MM-ddT12:00")
 
-# Three 12h windows to capture today + tomorrow (36h total)
-$w1s = $todayStart
-$w1e = $todayMidday
-$w2s = $todayMidday
-$w2e = $tomorrowStart
-$w3s = $tomorrowStart
-$w3e = $tomorrowMidday
-
-Write-Host "Scanning 36h: $w1s to $w3e (three 12h windows, capturing today + tomorrow)"
-
-$queries = @(
-  @{ ap="DXB"; id="emirates"; pfx="EK"; s=$w1s; e=$w1e },
-  @{ ap="DXB"; id="emirates"; pfx="EK"; s=$w2s; e=$w2e },
-  @{ ap="DXB"; id="emirates"; pfx="EK"; s=$w3s; e=$w3e },
-  @{ ap="DOH"; id="qatar";    pfx="QR"; s=$w1s; e=$w1e },
-  @{ ap="DOH"; id="qatar";    pfx="QR"; s=$w2s; e=$w2e },
-  @{ ap="DOH"; id="qatar";    pfx="QR"; s=$w3s; e=$w3e },
-  @{ ap="AUH"; id="etihad";   pfx="EY"; s=$w1s; e=$w1e },
-  @{ ap="AUH"; id="etihad";   pfx="EY"; s=$w2s; e=$w2e },
-  @{ ap="AUH"; id="etihad";   pfx="EY"; s=$w3s; e=$w3e }
+# Nine 12h windows to capture 5 days (today through day 4)
+$windows = @(
+  @{ s=$d0Start; e=$d0Mid },
+  @{ s=$d0Mid; e=$d1Start },
+  @{ s=$d1Start; e=$d1Mid },
+  @{ s=$d1Mid; e=$d2Start },
+  @{ s=$d2Start; e=$d2Mid },
+  @{ s=$d2Mid; e=$d3Start },
+  @{ s=$d3Start; e=$d3Mid },
+  @{ s=$d3Mid; e=$d4Start },
+  @{ s=$d4Start; e=$d4Mid }
 )
+
+Write-Host "Scanning 5 days: $d0Start to $d4Mid (nine 12h windows)"
+
+$queries = @()
+foreach ($window in $windows) {
+  foreach ($ap in @("DXB", "DOH", "AUH")) {
+    $id = if ($ap -eq "DXB") { "emirates" } elseif ($ap -eq "DOH") { "qatar" } else { "etihad" }
+    $pfx = if ($ap -eq "DXB") { "EK" } elseif ($ap -eq "DOH") { "QR" } else { "EY" }
+    $queries += @{ ap=$ap; id=$id; pfx=$pfx; s=$window.s; e=$window.e }
+  }
+}
 
 $byAirline = @{ emirates=@(); qatar=@(); etihad=@() }
 $flightsByDate = @{}
@@ -150,7 +158,7 @@ $json = @"
 {
   "lastScan": "$timestamp",
   "scanVersion": 3,
-  "dataNote": "Live flight data from AeroDataBox API. 36h window (today 00:00 – tomorrow 12:00 SGT) captured in three 12h windows. Grouped by actual flight date. Scans every 12h.",
+  "dataNote": "Live flight data from AeroDataBox API. 5-day window (today 00:00 – day 4 12:00 SGT) captured in nine 12h windows. Grouped by actual flight date. Scans every 12h.",
   "airlines": [
     {
       "id": "emirates", "name": "Emirates", "iata": "EK", "hub": "DXB",
