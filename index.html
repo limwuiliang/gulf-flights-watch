@@ -87,7 +87,7 @@
         </div>
         <div>
           <label class="block text-xs mb-1 font-medium" style="color:#7a6e66;">Date</label>
-          <input id="filter-date" type="date" min="2026-03-28" class="rounded px-3 py-1.5 text-sm bg-white focus:outline-none" style="border:1px solid #c8bfb4;color:#3d3530;" />
+          <input id="filter-date" type="date" id="filter-date" class="rounded px-3 py-1.5 text-sm bg-white focus:outline-none" style="border:1px solid #c8bfb4;color:#3d3530;" />
         </div>
         <button onclick="applyFilters()" class="px-4 py-1.5 rounded text-sm font-medium text-white transition" style="background:#4a7c59;" onmouseover="this.style.background='#3a6347'" onmouseout="this.style.background='#4a7c59'">Apply</button>
         <button onclick="clearFilters()" class="px-4 py-1.5 rounded text-sm font-medium transition" style="background:#ede8e1;color:#5c5040;border:1px solid #c8bfb4;" onmouseover="this.style.background='#e0d8ce'" onmouseout="this.style.background='#ede8e1'">Clear</button>
@@ -99,7 +99,7 @@
       <div class="flex items-center justify-between px-5 py-3" style="border-bottom:1px solid #d6cfc4;">
         <div>
           <h2 class="font-semibold" style="color:#2c3e2d;">Flight Intelligence</h2>
-          <p class="text-xs mt-0.5" style="color:#a0948a;">Showing upcoming &amp; in-flight departures from 28 Mar 2026</p>
+          <p class="text-xs mt-0.5" id="table-subtitle" style="color:#a0948a;">Showing confirmed flights: today + next 7 days</p>
         </div>
         <span id="row-count" class="text-xs rounded-full px-3 py-0.5" style="background:#ede8e1;color:#7a6e66;border:1px solid #d6cfc4;">— rows</span>
       </div>
@@ -231,14 +231,17 @@
     // ─────────────────────────────────────────────
     let allRows = [];
 
-    const CUTOFF = '2026-03-28';
+    const TODAY     = new Date().toISOString().slice(0, 10);
+    const CUTOFF    = TODAY;
+    const HORIZON   = new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10);
 
     function buildRows() {
       allRows = [];
       for (const a of scanData.airlines) {
         for (const f of a.flights) {
-          // Hard filter: drop any flight with a date before the cutoff
-          if (f.date && f.date < CUTOFF) continue;
+          const d = f.date || scanData.lastScan.slice(0, 10);
+          // Show only today through +7 days
+          if (d < CUTOFF || d > HORIZON) continue;
           allRows.push({ airline: a, flight: f });
         }
       }
@@ -448,6 +451,9 @@
     // ─────────────────────────────────────────────
     //  Init
     // ─────────────────────────────────────────────
+    // Constrain date picker to today → +7 days
+    const dateInput = document.getElementById('filter-date');
+    if (dateInput) { dateInput.min = TODAY; dateInput.max = HORIZON; }
     loadData();
   </script>
 </body>
