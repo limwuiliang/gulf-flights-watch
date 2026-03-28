@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gulf Flights Watch Live</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    body { font-family: 'Segoe UI', system-ui, sans-serif; }
+    .status-REDUCED    { background: #fef3c7; color: #92400e; border-color: #f59e0b; }
+    .status-RESTRICTED { background: #fee2e2; color: #7f1d1d; border-color: #ef4444; }
+    .status-NORMAL     { background: #d1fae5; color: #064e3b; border-color: #10b981; }
+    .status-UNKNOWN    { background: #f3f4f6; color: #374151; border-color: #9ca3af; }
+    .badge-Standard    { background: #dbeafe; color: #1e40af; }
+    .badge-Restricted  { background: #fef3c7; color: #92400e; }
+    .badge-Evacuation  { background: #fee2e2; color: #7f1d1d; font-weight: 700; }
+    tr:hover td { background: #f8fafc; }
+    .airline-tab.active { border-bottom: 3px solid #3b82f6; color: #1d4ed8; font-weight: 600; }
+    .airline-tab { border-bottom: 3px solid transparent; }
+    #chart-section canvas { max-height: 340px; }
+    .pulse-red {
+      animation: pulseRed 1.5s infinite;
+    }
+    @keyframes pulseRed {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.5); }
+      50% { box-shadow: 0 0 0 8px rgba(239,68,68,0); }
+    }
+    .alert-banner {
+      background: linear-gradient(90deg, #7f1d1d, #991b1b);
+    }
+  </style>
+</head>
+<body class="bg-gray-950 text-gray-100 min-h-screen">
+
+  <!-- Header -->
+  <header class="bg-gray-900 border-b border-gray-800 px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+    <div class="flex items-center gap-3">
+      <span class="text-2xl">✈️</span>
+      <div>
+        <h1 class="text-xl font-bold text-white tracking-tight">Gulf Flights Watch <span class="text-blue-400">Live</span></h1>
+        <p class="text-xs text-gray-400">Monitoring Emirates · Etihad · Qatar Airways · Riyadh Air</p>
+      </div>
+    </div>
+    <div class="text-right">
+      <span id="last-scan-label" class="text-xs text-gray-400">Last scan: —</span><br/>
+      <span id="next-scan-label" class="text-xs text-gray-500">Next scan in 6h</span>
+    </div>
+  </header>
+
+  <!-- Evacuation Alert Banner (hidden by default, shown if evacuation flights detected) -->
+  <div id="evac-banner" class="alert-banner pulse-red hidden px-6 py-3 flex items-center gap-3">
+    <span class="text-xl">🚨</span>
+    <span class="font-bold text-white text-sm" id="evac-banner-text">EVACUATION FLIGHT DETECTED — See table below</span>
+    <span class="ml-auto text-xs text-red-200 cursor-pointer hover:text-white" onclick="document.getElementById('evac-banner').classList.add('hidden')">✕ dismiss</span>
+  </div>
+
+  <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
+
+    <!-- Airline Status Cards -->
+    <section>
+      <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-widest mb-3">Airline Status</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4" id="airline-cards"></div>
+    </section>
+
+    <!-- Filters -->
+    <section class="bg-gray-900 rounded-xl border border-gray-800 p-4">
+      <div class="flex flex-wrap gap-4 items-end">
+        <div>
+          <label class="block text-xs text-gray-400 mb-1">Airline</label>
+          <select id="filter-airline" class="bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm text-white">
+            <option value="all">All Airlines</option>
+            <option value="emirates">Emirates (EK)</option>
+            <option value="qatar">Qatar Airways (QR)</option>
+            <option value="etihad">Etihad (EY)</option>
+            <option value="riyadhair">Riyadh Air (RX)</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs text-gray-400 mb-1">Category</label>
+          <select id="filter-category" class="bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm text-white">
+            <option value="all">All Categories</option>
+            <option value="Standard">Standard</option>
+            <option value="Restricted">Restricted</option>
+            <option value="Restricted/Evacuation">Evacuation</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs text-gray-400 mb-1">Destination</label>
+          <input id="filter-dest" type="text" placeholder="e.g. LHR, DXB..." class="bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm text-white w-40" />
+        </div>
+        <div>
+          <label class="block text-xs text-gray-400 mb-1">Max Price (USD)</label>
+          <input id="filter-price" type="number" placeholder="e.g. 800" class="bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm text-white w-32" />
+        </div>
+        <button onclick="applyFilters()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 rounded text-sm font-medium transition">Apply</button>
+        <button onclick="clearFilters()" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-1.5 rounded text-sm font-medium transition">Clear</button>
+      </div>
+    </section>
+
+    <!-- Flights Table -->
+    <section class="bg-gray-900 rounded-xl border border-gray-800 overflow-hidden">
+      <div class="flex items-center justify-between px-5 py-3 border-b border-gray-800">
+        <h2 class="font-semibold text-white">Flight Intelligence</h2>
+        <span id="row-count" class="text-xs text-gray-400 bg-gray-800 rounded-full px-3 py-0.5">— rows</span>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-gray-800">
+              <th class="text-left px-4 py-2.5 text-gray-400 font-medium">Airline</th>
+              <th class="text-left px-4 py-2.5 text-gray-400 font-medium">Flight #</th>
+              <th class="text-left px-4 py-2.5 text-gray-400 font-medium">Route</th>
+              <th class="text-left px-4 py-2.5 text-gray-400 font-medium">Time / Schedule</th>
+              <th class="text-left px-4 py-2.5 text-gray-400 font-medium">Category</th>
+              <th class="text-left px-4 py-2.5 text-gray-400 font-medium">Price (USD)</th>
+              <th class="text-left px-4 py-2.5 text-gray-400 font-medium">Notes</th>
+            </tr>
+          </thead>
+          <tbody id="flights-tbody">
+            <tr><td colspan="7" class="text-center text-gray-500 py-8">Loading data…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Chart -->
+    <section id="chart-section" class="bg-gray-900 rounded-xl border border-gray-800 p-5">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <h2 class="font-semibold text-white">Flight Volume Trend</h2>
+        <div class="flex flex-wrap gap-2">
+          <label class="inline-flex items-center gap-1.5 text-xs text-gray-300 cursor-pointer">
+            <input type="checkbox" class="airline-toggle" value="emirates" checked /> Emirates
+          </label>
+          <label class="inline-flex items-center gap-1.5 text-xs text-gray-300 cursor-pointer">
+            <input type="checkbox" class="airline-toggle" value="qatar" checked /> Qatar Airways
+          </label>
+          <label class="inline-flex items-center gap-1.5 text-xs text-gray-300 cursor-pointer">
+            <input type="checkbox" class="airline-toggle" value="etihad" checked /> Etihad
+          </label>
+          <label class="inline-flex items-center gap-1.5 text-xs text-gray-300 cursor-pointer">
+            <input type="checkbox" class="airline-toggle" value="riyadhair" checked /> Riyadh Air
+          </label>
+        </div>
+      </div>
+      <canvas id="volumeChart"></canvas>
+    </section>
+
+    <!-- Raw Advisory Section -->
+    <section class="bg-gray-900 rounded-xl border border-gray-800 p-5">
+      <h2 class="font-semibold text-white mb-3">Official Advisory Summaries</h2>
+      <div id="advisory-cards" class="space-y-3"></div>
+    </section>
+
+  </main>
+
+  <footer class="text-center text-xs text-gray-600 py-6 border-t border-gray-900 mt-4">
+    Gulf Flights Watch Live · Data sourced from official airline travel update pages · Auto-refreshes every 6h · Not for operational flight planning
+  </footer>
+
+  <script>
+    // ─────────────────────────────────────────────
+    //  Inline data (auto-updated by scan agent)
+    // ─────────────────────────────────────────────
+    const INLINE_DATA = {"lastScan":"2026-03-28T01:47:00Z","scanVersion":1,"airlines":[{"id":"emirates","name":"Emirates","iata":"EK","hub":"DXB","color":"#D71921","status":"REDUCED","statusLabel":"Reduced Schedule","source":"https://www.emirates.com/us/english/help/travel-updates/","lastUpdated":"2026-03-28","summary":"Operating a reduced flight schedule following partial reopening of regional airspace. Travel waiver in effect for Feb 28 – Apr 15 travelers. Rebooking allowed to May 31. City check-in points in Dubai temporarily closed.","advisory":{"affectedDates":{"from":"2026-02-28","to":"2026-04-15"},"rebookBy":"2026-05-31","waiverChanges":9,"airspaceStatus":"PARTIAL_REOPEN"},"flights":[{"flightNumber":"EK-VAR","origin":"DXB","transit":null,"destination":"Multiple","time":"Reduced schedule — check emirates.com/schedule","category":"Standard","priceUSD":null,"note":"Limited seats available. Verify at emirates.com."}]},{"id":"qatar","name":"Qatar Airways","iata":"QR","hub":"DOH","color":"#5C0632","status":"RESTRICTED","statusLabel":"Restricted / Limited Corridor","source":"https://www.qatarairways.com/en/travel-alerts.html","lastUpdated":"2026-03-15","summary":"Qatari airspace closed since ~Feb 28. Operating within a limited safe corridor only. Selected non-stop point-to-point services arranged for stranded passengers. Revised schedule March 18–28. Travel waiver Feb 28–Mar 28.","advisory":{"affectedDates":{"from":"2026-02-28","to":"2026-03-28"},"rebookBy":"2026-04-30","waiverChanges":2,"airspaceStatus":"LIMITED_CORRIDOR"},"flights":[{"flightNumber":"QR-SCHED","origin":"DOH","transit":null,"destination":"Selected destinations","time":"Limited — Mar 18–28 revised schedule","category":"Restricted","priceUSD":null,"note":"Point-to-point non-stop services for stranded pax. Check qatarairways.com/schedule."},{"flightNumber":"QR-EVAC","origin":"DOH","transit":null,"destination":"TBD","time":"On-demand","category":"Restricted/Evacuation","priceUSD":null,"note":"Non-stop point-to-point services arranged for passengers unable to complete journeys. Eligible customers contacted directly."}]},{"id":"etihad","name":"Etihad Airways","iata":"EY","hub":"AUH","color":"#BD8B13","status":"UNKNOWN","statusLabel":"Data Unavailable","source":"https://www.etihad.com/en/help/travel-updates","lastUpdated":null,"summary":"Travel advisory page returned 404. Unable to retrieve live data this scan cycle. Check etihad.com directly for latest updates.","advisory":null,"flights":[]},{"id":"riyadhair","name":"Riyadh Air","iata":"RX","hub":"RUH","color":"#006B3F","status":"UNKNOWN","statusLabel":"Data Unavailable","source":"https://www.riyadhair.com","lastUpdated":null,"summary":"No travel advisory page found. Riyadh Air is a new carrier (launched 2024) with limited web infrastructure for disruption updates. Monitor social media and riyadhair.com directly.","advisory":null,"flights":[]}],"flightVolumeHistory":[{"date":"2026-02-27","emirates":85,"qatar":92,"etihad":78,"riyadhair":12},{"date":"2026-02-28","emirates":60,"qatar":30,"etihad":55,"riyadhair":8},{"date":"2026-03-01","emirates":45,"qatar":15,"etihad":40,"riyadhair":5},{"date":"2026-03-05","emirates":38,"qatar":12,"etihad":35,"riyadhair":3},{"date":"2026-03-10","emirates":32,"qatar":10,"etihad":28,"riyadhair":2},{"date":"2026-03-15","emirates":35,"qatar":8,"etihad":30,"riyadhair":2},{"date":"2026-03-20","emirates":40,"qatar":18,"etihad":32,"riyadhair":3},{"date":"2026-03-25","emirates":48,"qatar":22,"etihad":38,"riyadhair":4},{"date":"2026-03-28","emirates":52,"qatar":25,"etihad":null,"riyadhair":null}]};
+
+    // ─────────────────────────────────────────────
+    //  Load data
+    // ─────────────────────────────────────────────
+    let scanData = null;
+
+    async function loadData() {
+      // Try fetching external JSON first (works when served via HTTP).
+      // Falls back to inline data when opened as a local file:// (browser CORS block).
+      try {
+        const res = await fetch('./data/scan_results.json?v=' + Date.now());
+        if (!res.ok) throw new Error('non-200');
+        scanData = await res.json();
+      } catch (e) {
+        scanData = INLINE_DATA;
+      }
+      renderAll();
+    }
+
+    function renderAll() {
+      renderLastScan();
+      renderCards();
+      renderTable();
+      renderChart();
+      renderAdvisories();
+      checkEvacAlert();
+    }
+
+    // ─────────────────────────────────────────────
+    //  Last Scan
+    // ─────────────────────────────────────────────
+    function renderLastScan() {
+      const d = new Date(scanData.lastScan);
+      document.getElementById('last-scan-label').textContent =
+        'Last scan: ' + d.toLocaleString('en-SG', { timeZone: 'Asia/Singapore', dateStyle: 'medium', timeStyle: 'short' }) + ' SGT';
+    }
+
+    // ─────────────────────────────────────────────
+    //  Airline Status Cards
+    // ─────────────────────────────────────────────
+    function renderCards() {
+      const container = document.getElementById('airline-cards');
+      container.innerHTML = '';
+      for (const a of scanData.airlines) {
+        const card = document.createElement('div');
+        card.className = `rounded-xl border p-4 status-${a.status}`;
+        card.innerHTML = `
+          <div class="flex items-center justify-between mb-1">
+            <span class="font-bold text-base" style="color:${a.color}">${a.name}</span>
+            <span class="text-xs font-semibold px-2 py-0.5 rounded-full border status-${a.status}">${a.statusLabel}</span>
+          </div>
+          <div class="text-xs mt-1 opacity-80">${a.hub} Hub · ${a.iata}</div>
+          <div class="text-xs mt-2 leading-relaxed line-clamp-3">${a.summary}</div>
+          ${a.source ? `<a href="${a.source}" target="_blank" class="text-xs text-blue-500 underline mt-2 block">Official advisory ↗</a>` : ''}
+        `;
+        container.appendChild(card);
+      }
+    }
+
+    // ─────────────────────────────────────────────
+    //  Flights Table
+    // ─────────────────────────────────────────────
+    let allRows = [];
+
+    function buildRows() {
+      allRows = [];
+      for (const a of scanData.airlines) {
+        for (const f of a.flights) {
+          allRows.push({ airline: a, flight: f });
+        }
+      }
+    }
+
+    function applyFilters() {
+      const airline = document.getElementById('filter-airline').value;
+      const cat = document.getElementById('filter-category').value;
+      const dest = document.getElementById('filter-dest').value.trim().toLowerCase();
+      const maxPrice = parseFloat(document.getElementById('filter-price').value) || Infinity;
+
+      const filtered = allRows.filter(r => {
+        if (airline !== 'all' && r.airline.id !== airline) return false;
+        if (cat !== 'all' && r.flight.category !== cat) return false;
+        if (dest && !r.flight.destination.toLowerCase().includes(dest) && !r.flight.origin.toLowerCase().includes(dest)) return false;
+        if (r.flight.priceUSD !== null && r.flight.priceUSD > maxPrice) return false;
+        return true;
+      });
+
+      renderRows(filtered);
+    }
+
+    function clearFilters() {
+      document.getElementById('filter-airline').value = 'all';
+      document.getElementById('filter-category').value = 'all';
+      document.getElementById('filter-dest').value = '';
+      document.getElementById('filter-price').value = '';
+      renderRows(allRows);
+    }
+
+    function renderTable() {
+      buildRows();
+      renderRows(allRows);
+    }
+
+    function renderRows(rows) {
+      const tbody = document.getElementById('flights-tbody');
+      document.getElementById('row-count').textContent = rows.length + ' row' + (rows.length !== 1 ? 's' : '');
+
+      if (!rows.length) {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center text-gray-500 py-8">No flights match your filters.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = rows.map(r => {
+        const f = r.flight;
+        const a = r.airline;
+        const catClass = f.category.includes('Evacuation') ? 'badge-Evacuation' :
+                         f.category === 'Restricted' ? 'badge-Restricted' : 'badge-Standard';
+        const route = f.transit ? `${f.origin} → ${f.transit} → ${f.destination}` : `${f.origin} → ${f.destination}`;
+        const price = f.priceUSD != null ? '$' + f.priceUSD.toLocaleString() : '—';
+        const evacIcon = f.category.includes('Evacuation') ? ' 🚨' : '';
+        return `
+          <tr class="border-b border-gray-800/60 transition-colors">
+            <td class="px-4 py-3">
+              <span class="font-semibold text-xs" style="color:${a.color}">${a.name}</span>
+            </td>
+            <td class="px-4 py-3 font-mono text-xs text-gray-200">${f.flightNumber}</td>
+            <td class="px-4 py-3 text-xs text-gray-100">${route}</td>
+            <td class="px-4 py-3 text-xs text-gray-300">${f.time}</td>
+            <td class="px-4 py-3">
+              <span class="text-xs px-2 py-0.5 rounded-full ${catClass}">${f.category}${evacIcon}</span>
+            </td>
+            <td class="px-4 py-3 text-xs font-mono text-gray-200">${price}</td>
+            <td class="px-4 py-3 text-xs text-gray-400 max-w-xs">${f.note || '—'}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // ─────────────────────────────────────────────
+    //  Chart
+    // ─────────────────────────────────────────────
+    let volumeChart = null;
+    const AIRLINE_COLORS = {
+      emirates:  { border: '#D71921', bg: 'rgba(215,25,33,0.15)' },
+      qatar:     { border: '#5C0632', bg: 'rgba(92,6,50,0.2)' },
+      etihad:    { border: '#BD8B13', bg: 'rgba(189,139,19,0.15)' },
+      riyadhair: { border: '#006B3F', bg: 'rgba(0,107,63,0.15)' },
+    };
+    const AIRLINE_LABELS = { emirates: 'Emirates', qatar: 'Qatar Airways', etihad: 'Etihad', riyadhair: 'Riyadh Air' };
+
+    function renderChart() {
+      const history = scanData.flightVolumeHistory;
+      const labels = history.map(d => d.date);
+
+      const datasets = ['emirates', 'qatar', 'etihad', 'riyadhair'].map(k => ({
+        label: AIRLINE_LABELS[k],
+        data: history.map(d => d[k]),
+        borderColor: AIRLINE_COLORS[k].border,
+        backgroundColor: AIRLINE_COLORS[k].bg,
+        fill: true,
+        tension: 0.4,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        spanGaps: true,
+      }));
+
+      const ctx = document.getElementById('volumeChart').getContext('2d');
+      if (volumeChart) volumeChart.destroy();
+
+      volumeChart = new Chart(ctx, {
+        type: 'line',
+        data: { labels, datasets },
+        options: {
+          responsive: true,
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: { labels: { color: '#d1d5db', font: { size: 11 } } },
+            tooltip: {
+              backgroundColor: '#1f2937',
+              titleColor: '#f9fafb',
+              bodyColor: '#d1d5db',
+              borderColor: '#374151',
+              borderWidth: 1,
+            }
+          },
+          scales: {
+            x: {
+              ticks: { color: '#9ca3af', font: { size: 10 } },
+              grid: { color: 'rgba(255,255,255,0.05)' }
+            },
+            y: {
+              ticks: { color: '#9ca3af', font: { size: 10 } },
+              grid: { color: 'rgba(255,255,255,0.05)' },
+              title: { display: true, text: 'Est. Daily Flights', color: '#6b7280', font: { size: 11 } }
+            }
+          }
+        }
+      });
+
+      // Toggle handlers
+      document.querySelectorAll('.airline-toggle').forEach(cb => {
+        cb.addEventListener('change', () => {
+          const key = cb.value;
+          const idx = volumeChart.data.datasets.findIndex(d => d.label === AIRLINE_LABELS[key]);
+          if (idx >= 0) {
+            const meta = volumeChart.getDatasetMeta(idx);
+            meta.hidden = !cb.checked;
+            volumeChart.update();
+          }
+        });
+      });
+    }
+
+    // ─────────────────────────────────────────────
+    //  Advisory Summaries
+    // ─────────────────────────────────────────────
+    function renderAdvisories() {
+      const container = document.getElementById('advisory-cards');
+      container.innerHTML = '';
+      for (const a of scanData.airlines) {
+        const div = document.createElement('div');
+        div.className = `rounded-lg border border-gray-700 p-4 bg-gray-800/40`;
+        const adv = a.advisory;
+        const advHtml = adv ? `
+          <div class="mt-2 flex flex-wrap gap-3 text-xs">
+            <span class="bg-gray-700 px-2 py-0.5 rounded">Affected: ${adv.affectedDates?.from} → ${adv.affectedDates?.to}</span>
+            ${adv.rebookBy ? `<span class="bg-gray-700 px-2 py-0.5 rounded">Rebook by: ${adv.rebookBy}</span>` : ''}
+            ${adv.waiverChanges ? `<span class="bg-gray-700 px-2 py-0.5 rounded">Waiver changes: ${adv.waiverChanges}</span>` : ''}
+            <span class="bg-gray-700 px-2 py-0.5 rounded font-mono">Airspace: ${adv.airspaceStatus || 'N/A'}</span>
+          </div>
+        ` : '';
+
+        div.innerHTML = `
+          <div class="flex items-center gap-2 mb-1">
+            <span class="font-bold" style="color:${a.color}">${a.name}</span>
+            <span class="text-xs px-2 py-0.5 rounded-full border status-${a.status}">${a.statusLabel}</span>
+            ${a.lastUpdated ? `<span class="text-xs text-gray-500 ml-auto">Updated: ${a.lastUpdated}</span>` : ''}
+          </div>
+          <p class="text-sm text-gray-300 leading-relaxed">${a.summary}</p>
+          ${advHtml}
+          ${a.source ? `<a href="${a.source}" target="_blank" class="text-xs text-blue-400 underline mt-2 block">Source ↗</a>` : ''}
+        `;
+        container.appendChild(div);
+      }
+    }
+
+    // ─────────────────────────────────────────────
+    //  Evacuation Alert
+    // ─────────────────────────────────────────────
+    function checkEvacAlert() {
+      const evacuations = [];
+      for (const a of scanData.airlines) {
+        for (const f of a.flights) {
+          if (f.category && f.category.includes('Evacuation')) {
+            evacuations.push(`${a.name} ${f.flightNumber} → ${f.destination}`);
+          }
+        }
+      }
+      if (evacuations.length > 0) {
+        document.getElementById('evac-banner').classList.remove('hidden');
+        document.getElementById('evac-banner-text').textContent =
+          '🚨 EVACUATION FLIGHTS DETECTED: ' + evacuations.join(' · ');
+      }
+    }
+
+    // ─────────────────────────────────────────────
+    //  Init
+    // ─────────────────────────────────────────────
+    loadData();
+  </script>
+</body>
+</html>

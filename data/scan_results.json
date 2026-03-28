@@ -1,0 +1,115 @@
+{
+  "lastScan": "2026-03-28T01:47:00Z",
+  "scanVersion": 1,
+  "airlines": [
+    {
+      "id": "emirates",
+      "name": "Emirates",
+      "iata": "EK",
+      "hub": "DXB",
+      "color": "#D71921",
+      "status": "REDUCED",
+      "statusLabel": "Reduced Schedule",
+      "source": "https://www.emirates.com/us/english/help/travel-updates/",
+      "lastUpdated": "2026-03-28",
+      "summary": "Operating a reduced flight schedule following partial reopening of regional airspace. Travel waiver in effect for Feb 28 – Apr 15 travelers. Rebooking allowed to May 31. City check-in points in Dubai temporarily closed.",
+      "advisory": {
+        "affectedDates": { "from": "2026-02-28", "to": "2026-04-15" },
+        "rebookBy": "2026-05-31",
+        "waiverChanges": 9,
+        "airspaceStatus": "PARTIAL_REOPEN"
+      },
+      "flights": [
+        {
+          "flightNumber": "EK-VAR",
+          "origin": "DXB",
+          "transit": null,
+          "destination": "Multiple",
+          "time": "Reduced schedule — check emirates.com/schedule",
+          "category": "Standard",
+          "priceUSD": null,
+          "note": "Limited seats available. Verify at emirates.com."
+        }
+      ]
+    },
+    {
+      "id": "qatar",
+      "name": "Qatar Airways",
+      "iata": "QR",
+      "hub": "DOH",
+      "color": "#5C0632",
+      "status": "RESTRICTED",
+      "statusLabel": "Restricted / Limited Corridor",
+      "source": "https://www.qatarairways.com/en/travel-alerts.html",
+      "lastUpdated": "2026-03-15",
+      "summary": "Qatari airspace closed since ~Feb 28. Operating within a limited safe corridor only. Selected non-stop point-to-point services arranged for stranded passengers. Revised schedule March 18–28. Travel waiver Feb 28–Mar 28.",
+      "advisory": {
+        "affectedDates": { "from": "2026-02-28", "to": "2026-03-28" },
+        "rebookBy": "2026-04-30",
+        "waiverChanges": 2,
+        "airspaceStatus": "LIMITED_CORRIDOR"
+      },
+      "flights": [
+        {
+          "flightNumber": "QR-SCHED",
+          "origin": "DOH",
+          "transit": null,
+          "destination": "Selected destinations",
+          "time": "Limited — Mar 18–28 revised schedule",
+          "category": "Restricted",
+          "priceUSD": null,
+          "note": "Point-to-point non-stop services for stranded pax. Check qatarairways.com/schedule."
+        },
+        {
+          "flightNumber": "QR-EVAC",
+          "origin": "DOH",
+          "transit": null,
+          "destination": "TBD",
+          "time": "On-demand",
+          "category": "Restricted/Evacuation",
+          "priceUSD": null,
+          "note": "Non-stop point-to-point services arranged for passengers unable to complete journeys. Eligible customers contacted directly."
+        }
+      ]
+    },
+    {
+      "id": "etihad",
+      "name": "Etihad Airways",
+      "iata": "EY",
+      "hub": "AUH",
+      "color": "#BD8B13",
+      "status": "UNKNOWN",
+      "statusLabel": "Data Unavailable",
+      "source": "https://www.etihad.com/en/help/travel-updates",
+      "lastUpdated": null,
+      "summary": "Travel advisory page returned 404. Unable to retrieve live data this scan cycle. Check etihad.com directly for latest updates.",
+      "advisory": null,
+      "flights": []
+    },
+    {
+      "id": "riyadhair",
+      "name": "Riyadh Air",
+      "iata": "RX",
+      "hub": "RUH",
+      "color": "#006B3F",
+      "status": "UNKNOWN",
+      "statusLabel": "Data Unavailable",
+      "source": "https://www.riyadhair.com",
+      "lastUpdated": null,
+      "summary": "No travel advisory page found. Riyadh Air is a new carrier (launched 2024) with limited web infrastructure for disruption updates. Monitor social media and riyadhair.com directly.",
+      "advisory": null,
+      "flights": []
+    }
+  ],
+  "flightVolumeHistory": [
+    { "date": "2026-02-27", "emirates": 85, "qatar": 92, "etihad": 78, "riyadhair": 12 },
+    { "date": "2026-02-28", "emirates": 60, "qatar": 30, "etihad": 55, "riyadhair": 8 },
+    { "date": "2026-03-01", "emirates": 45, "qatar": 15, "etihad": 40, "riyadhair": 5 },
+    { "date": "2026-03-05", "emirates": 38, "qatar": 12, "etihad": 35, "riyadhair": 3 },
+    { "date": "2026-03-10", "emirates": 32, "qatar": 10, "etihad": 28, "riyadhair": 2 },
+    { "date": "2026-03-15", "emirates": 35, "qatar": 8, "etihad": 30, "riyadhair": 2 },
+    { "date": "2026-03-20", "emirates": 40, "qatar": 18, "etihad": 32, "riyadhair": 3 },
+    { "date": "2026-03-25", "emirates": 48, "qatar": 22, "etihad": 38, "riyadhair": 4 },
+    { "date": "2026-03-28", "emirates": 52, "qatar": 25, "etihad": null, "riyadhair": null }
+  ]
+}
