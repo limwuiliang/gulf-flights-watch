@@ -90,28 +90,33 @@
     <!-- Flights Table -->
     <section class="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
       <div class="flex items-center justify-between px-5 py-3 border-b border-gray-200">
-        <h2 class="font-semibold text-gray-900">Flight Intelligence</h2>
+        <div>
+          <h2 class="font-semibold text-gray-900">Flight Intelligence</h2>
+          <p class="text-xs text-gray-400 mt-0.5">Showing upcoming &amp; in-flight departures from 28 Mar 2026</p>
+        </div>
         <span id="row-count" class="text-xs text-gray-500 bg-gray-100 rounded-full px-3 py-0.5 border border-gray-200">— rows</span>
       </div>
       <div class="overflow-x-auto">
-        <table class="w-full text-sm">
-          <thead>
-            <tr class="border-b border-gray-200 bg-gray-50">
-              <th class="text-left px-4 py-2.5 text-gray-500 font-semibold text-xs uppercase tracking-wide">Airline</th>
-              <th class="text-left px-4 py-2.5 text-gray-500 font-semibold text-xs uppercase tracking-wide">Flight #</th>
-              <th class="text-left px-4 py-2.5 text-gray-500 font-semibold text-xs uppercase tracking-wide">Route</th>
-              <th class="text-left px-4 py-2.5 text-gray-500 font-semibold text-xs uppercase tracking-wide">Destination</th>
-              <th class="text-left px-4 py-2.5 text-gray-500 font-semibold text-xs uppercase tracking-wide">Date</th>
-              <th class="text-left px-4 py-2.5 text-gray-500 font-semibold text-xs uppercase tracking-wide">Dep. Time</th>
-              <th class="text-left px-4 py-2.5 text-gray-500 font-semibold text-xs uppercase tracking-wide">Category</th>
-              <th class="text-left px-4 py-2.5 text-gray-500 font-semibold text-xs uppercase tracking-wide">Live Track</th>
-              <th class="text-left px-4 py-2.5 text-gray-500 font-semibold text-xs uppercase tracking-wide">Notes</th>
-            </tr>
-          </thead>
-          <tbody id="flights-tbody">
-            <tr><td colspan="9" class="text-center text-gray-400 py-10">Loading data…</td></tr>
-          </tbody>
-        </table>
+        <div style="max-height:480px; overflow-y:auto;">
+          <table class="w-full text-xs">
+            <thead class="sticky top-0 z-10">
+              <tr class="border-b border-gray-200 bg-gray-50">
+                <th class="text-left px-3 py-2 text-gray-500 font-semibold uppercase tracking-wide whitespace-nowrap">Airline</th>
+                <th class="text-left px-3 py-2 text-gray-500 font-semibold uppercase tracking-wide whitespace-nowrap">Flight #</th>
+                <th class="text-left px-3 py-2 text-gray-500 font-semibold uppercase tracking-wide whitespace-nowrap">Route</th>
+                <th class="text-left px-3 py-2 text-gray-500 font-semibold uppercase tracking-wide whitespace-nowrap">Destination</th>
+                <th class="text-left px-3 py-2 text-gray-500 font-semibold uppercase tracking-wide whitespace-nowrap">Date</th>
+                <th class="text-left px-3 py-2 text-gray-500 font-semibold uppercase tracking-wide whitespace-nowrap">Dep. Time</th>
+                <th class="text-left px-3 py-2 text-gray-500 font-semibold uppercase tracking-wide whitespace-nowrap">Category</th>
+                <th class="text-left px-3 py-2 text-gray-500 font-semibold uppercase tracking-wide whitespace-nowrap">Live Track</th>
+                <th class="text-left px-3 py-2 text-gray-500 font-semibold uppercase tracking-wide">Notes</th>
+              </tr>
+            </thead>
+            <tbody id="flights-tbody">
+              <tr><td colspan="9" class="text-center text-gray-400 py-10">Loading data…</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </section>
 
@@ -218,10 +223,14 @@
     // ─────────────────────────────────────────────
     let allRows = [];
 
+    const CUTOFF = '2026-03-28';
+
     function buildRows() {
       allRows = [];
       for (const a of scanData.airlines) {
         for (const f of a.flights) {
+          // Hard filter: drop any flight with a date before the cutoff
+          if (f.date && f.date < CUTOFF) continue;
           allRows.push({ airline: a, flight: f });
         }
       }
@@ -269,34 +278,32 @@
       tbody.innerHTML = rows.map(r => {
         const f = r.flight;
         const a = r.airline;
-        const catClass = f.category.includes('Evacuation') ? 'badge-Evacuation' :
-                         f.category === 'Restricted'       ? 'badge-Restricted' : 'badge-Standard';
-        const route = f.transit
-          ? `<span class="font-mono text-gray-800">${f.origin}</span> <span class="text-gray-400">→</span> <span class="font-mono text-gray-800">${f.transit}</span> <span class="text-gray-400">→</span> <span class="font-mono text-gray-800">${f.destination}</span>`
-          : `<span class="font-mono text-gray-800">${f.origin}</span> <span class="text-gray-400">→</span> <span class="font-mono text-gray-800">${f.destination}</span>`;
-        const evacIcon   = f.category.includes('Evacuation') ? ' 🚨' : '';
-        const flightNum  = f.flightNumber.replace(/[^A-Z0-9]/gi, '');
-        const faUrl      = `https://www.flightaware.com/live/flight/${flightNum}`;
-        const trackLink  = f.flightNumber.includes('-')
+        const catClass  = f.category.includes('Evacuation') ? 'badge-Evacuation' :
+                          f.category === 'Restricted'        ? 'badge-Restricted' : 'badge-Standard';
+        const route     = f.transit
+          ? `<span class="font-mono">${f.origin}</span><span class="text-gray-400 mx-0.5">→</span><span class="font-mono">${f.transit}</span><span class="text-gray-400 mx-0.5">→</span><span class="font-mono">${f.destination}</span>`
+          : `<span class="font-mono">${f.origin}</span><span class="text-gray-400 mx-0.5">→</span><span class="font-mono">${f.destination}</span>`;
+        const evacIcon  = f.category.includes('Evacuation') ? ' 🚨' : '';
+        const flightNum = f.flightNumber.replace(/[^A-Z0-9]/gi, '');
+        const faUrl     = `https://www.flightaware.com/live/flight/${flightNum}`;
+        const trackLink = f.flightNumber.includes('-')
           ? '<span class="text-gray-300">—</span>'
-          : `<a href="${faUrl}" target="_blank" rel="noopener" class="text-blue-600 hover:underline text-xs">FlightAware ↗</a>`;
-        const dateLabel  = a.lastUpdated || '—';
+          : `<a href="${faUrl}" target="_blank" rel="noopener" class="text-blue-600 hover:underline">FA ↗</a>`;
+        const dateLabel = f.date || '—';
 
         return `
-          <tr class="border-b border-gray-100 transition-colors">
-            <td class="px-4 py-3 whitespace-nowrap">
-              <span class="font-semibold text-xs" style="color:${a.color}">${a.name}</span>
+          <tr class="border-b border-gray-100 hover:bg-blue-50 transition-colors">
+            <td class="px-3 py-1.5 whitespace-nowrap font-semibold" style="color:${a.color}">${a.iata}</td>
+            <td class="px-3 py-1.5 font-mono font-bold text-gray-900 whitespace-nowrap">${f.flightNumber}</td>
+            <td class="px-3 py-1.5 whitespace-nowrap">${route}</td>
+            <td class="px-3 py-1.5 text-gray-700 whitespace-nowrap">${f.destinationName || f.destination}</td>
+            <td class="px-3 py-1.5 text-gray-600 whitespace-nowrap">${dateLabel}</td>
+            <td class="px-3 py-1.5 font-mono text-gray-700 whitespace-nowrap">${f.time}</td>
+            <td class="px-3 py-1.5 whitespace-nowrap">
+              <span class="px-1.5 py-0.5 rounded-full ${catClass}">${f.category}${evacIcon}</span>
             </td>
-            <td class="px-4 py-3 font-mono text-sm font-bold text-gray-900 whitespace-nowrap">${f.flightNumber}</td>
-            <td class="px-4 py-3 text-sm whitespace-nowrap">${route}</td>
-            <td class="px-4 py-3 text-sm text-gray-700">${f.destinationName || f.destination}</td>
-            <td class="px-4 py-3 text-sm text-gray-600 whitespace-nowrap">${dateLabel}</td>
-            <td class="px-4 py-3 text-sm font-mono text-gray-700 whitespace-nowrap">${f.time}</td>
-            <td class="px-4 py-3 whitespace-nowrap">
-              <span class="text-xs px-2 py-0.5 rounded-full ${catClass}">${f.category}${evacIcon}</span>
-            </td>
-            <td class="px-4 py-3 whitespace-nowrap">${trackLink}</td>
-            <td class="px-4 py-3 text-xs text-gray-500 max-w-xs">${f.note || '—'}</td>
+            <td class="px-3 py-1.5 whitespace-nowrap">${trackLink}</td>
+            <td class="px-3 py-1.5 text-gray-400" style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${(f.note||'').replace(/"/g,'&quot;')}">${f.note || '—'}</td>
           </tr>
         `;
       }).join('');
