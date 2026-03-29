@@ -55,7 +55,7 @@
           <option value="Evacuation">Evacuation</option>
         </select>
         <input id="filter-dest" type="text" placeholder="Destination..." class="px-3 py-1.5 rounded text-sm" style="border:1px solid #d6cfc4;color:#3d3530;" onkeyup="applyFilters()" />
-        <input id="filter-date" type="date" style="border:1px solid #d6cfc4;color:#3d3530;" onchange="applyFilters()" class="px-3 py-1.5 rounded text-sm" />
+        <input id="filter-date" type="date" style="border:1px solid #d6cfc4;color:#3d3530;" onchange="applyFilters()" class="px-3 py-1.5 rounded text-sm" min="" max="" />
         <button onclick="clearFilters()" class="px-3 py-1.5 rounded text-sm font-medium" style="background:#ede8e1;color:#5c5040;border:1px solid #c8bfb4;">Clear</button>
       </div>
     </section>
@@ -145,6 +145,13 @@
       } catch (e) {
         scanData = INLINE_DATA;
       }
+      
+      // Set date filter bounds: today to today + 6 days
+      const today = new Date();
+      const minDate = today.toISOString().split('T')[0];
+      const maxDate = new Date(today.getTime() + 6 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      document.getElementById('filter-date').min = minDate;
+      document.getElementById('filter-date').max = maxDate;
       
       renderLastScan();
       renderCards();
