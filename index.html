@@ -146,10 +146,9 @@
         scanData = INLINE_DATA;
       }
       
-      // Set date filter bounds: today to today + 6 days
-      const today = new Date();
-      const minDate = today.toISOString().split('T')[0];
-      const maxDate = new Date(today.getTime() + 6 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      // Set date filter bounds: Mar 29 anchor + 6 days (Mar 29 - Apr 5)
+      const minDate = '2026-03-29';
+      const maxDate = '2026-04-05';
       document.getElementById('filter-date').min = minDate;
       document.getElementById('filter-date').max = maxDate;
       
@@ -185,13 +184,23 @@
 
     function renderTable() {
       allRows = [];
-      const today = new Date().toISOString().slice(0, 10);
+      const minDateStr = '2026-03-29';
+      const maxDateStr = '2026-04-05';
+      
       for (const a of scanData.airlines) {
         for (const f of (a.flights || [])) {
           const d = f.date || scanData.lastScan.slice(0, 10);
-          allRows.push({ airline: a, flight: f, date: d });
+          // Only include flights within window (Mar 29 - Apr 5)
+          if (d >= minDateStr && d <= maxDateStr) {
+            allRows.push({ airline: a, flight: f, date: d });
+          }
         }
       }
+      
+      // Set date filter bounds
+      document.getElementById('filter-date').min = minDateStr;
+      document.getElementById('filter-date').max = maxDateStr;
+      
       renderRows(allRows);
     }
 
@@ -262,7 +271,8 @@
 
     function updateChartByStatus() {
       if (!scanData || !scanData.flightVolumeHistory) return;
-      const history = scanData.flightVolumeHistory;
+      // Filter to 7-day window starting Mar 29 (skip Mar 28)
+      const history = scanData.flightVolumeHistory.filter(d => d.date >= '2026-03-29' && d.date <= '2026-04-05');
       const labels = history.map(d => d.date);
       const datasets = [];
 
