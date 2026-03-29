@@ -8,31 +8,27 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
     body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f4f1ec; }
-    .status-REDUCED    { background: #fef9ec; color: #78580a; border-color: #d4a829; }
+    .status-REDUCED { background: #fef9ec; color: #78580a; border-color: #d4a829; }
     .status-RESTRICTED { background: #f0f4f8; color: #2d4a6b; border-color: #6b90b8; }
-    .status-NORMAL     { background: #eef6f1; color: #1f5c3a; border-color: #4a9e6b; }
-    .status-UNKNOWN    { background: #f0ede8; color: #5c5040; border-color: #b0a090; }
-    .badge-Standard    { background: #e8f4ec; color: #1f5c3a; }
-    .badge-Restricted  { background: #e8eef6; color: #2d4a6b; }
-    .badge-Evacuation  { background: #f0e8d8; color: #7a3a0a; font-weight: 700; }
+    .status-NORMAL { background: #eef6f1; color: #1f5c3a; border-color: #4a9e6b; }
+    .status-UNKNOWN { background: #f0ede8; color: #5c5040; border-color: #b0a090; }
+    .badge-Standard { background: #e8f4ec; color: #1f5c3a; }
+    .badge-Restricted { background: #e8eef6; color: #2d4a6b; }
+    .badge-Evacuation { background: #f0e8d8; color: #7a3a0a; font-weight: 700; }
     tbody tr:nth-child(even) td { background: #f9f7f3; }
     tbody tr:hover td { background: #eef6f1; }
     #chart-section canvas { max-height: 320px; }
     @media (max-width: 640px) {
-      .card-layout { display: block; }
       .table-scroll-wrapper { max-height: 400px !important; }
     }
   </style>
 </head>
 <body class="antialiased">
-
   <main class="max-w-7xl mx-auto px-4 py-6">
-
-    <!-- Header -->
     <div class="mb-6">
       <h1 class="text-2xl font-bold" style="color:#2c3e2d;">✈️ Gulf Flights Watch Live</h1>
       <p class="text-sm mt-1" style="color:#a0948a;">Monitoring Emirates · Etihad · Qatar Airways</p>
-      <p class="text-xs mt-2" style="color:#b0a898;"><span id="last-scan-label">Last scan: —</span> &nbsp;•&nbsp; Auto-refreshes every 12h</p>
+      <p class="text-xs mt-2" style="color:#b0a898;"><span id="last-scan-label">Last scan: —</span></p>
     </div>
 
     <!-- Status Cards -->
@@ -40,22 +36,15 @@
 
     <!-- Filters -->
     <section class="bg-white rounded-xl p-4 shadow-sm mb-6" style="border:1px solid #d6cfc4;">
-      <div class="flex flex-col sm:flex-row sm:items-center gap-4 mb-4">
+      <div class="flex flex-col sm:flex-row sm:items-center gap-3">
         <label class="text-sm font-semibold" style="color:#5c5040;">Filters</label>
         <select id="filter-airline" class="px-3 py-1.5 rounded text-sm" style="border:1px solid #d6cfc4;color:#3d3530;" onchange="applyFilters()">
           <option value="all">All Airlines</option>
-          <option value="emirates">Emirates (EK)</option>
-          <option value="qatar">Qatar Airways (QR)</option>
-          <option value="etihad">Etihad (EY)</option>
+          <option value="emirates">Emirates</option>
+          <option value="qatar">Qatar</option>
+          <option value="etihad">Etihad</option>
         </select>
-        <select id="filter-category" class="px-3 py-1.5 rounded text-sm" style="border:1px solid #d6cfc4;color:#3d3530;" onchange="applyFilters()">
-          <option value="all">All Categories</option>
-          <option value="Standard">Standard</option>
-          <option value="Restricted">Restricted</option>
-          <option value="Evacuation">Evacuation</option>
-        </select>
-        <input id="filter-dest" type="text" placeholder="Destination..." class="px-3 py-1.5 rounded text-sm" style="border:1px solid #d6cfc4;color:#3d3530;" onkeyup="applyFilters()" />
-        <input id="filter-date" type="date" style="border:1px solid #d6cfc4;color:#3d3530;" onchange="applyFilters()" class="px-3 py-1.5 rounded text-sm" min="" max="" />
+        <input id="filter-date" type="date" style="border:1px solid #d6cfc4;color:#3d3530;" onchange="applyFilters()" class="px-3 py-1.5 rounded text-sm" min="2026-03-29" max="2026-04-05" />
         <button onclick="clearFilters()" class="px-3 py-1.5 rounded text-sm font-medium" style="background:#ede8e1;color:#5c5040;border:1px solid #c8bfb4;">Clear</button>
       </div>
     </section>
@@ -65,26 +54,26 @@
       <div class="flex items-center justify-between mb-4">
         <div>
           <h2 class="font-semibold" style="color:#2c3e2d;">Flight Intelligence</h2>
-          <p class="text-xs mt-0.5" id="table-subtitle" style="color:#a0948a;">Showing confirmed flights: today + next 6 days</p>
+          <p class="text-xs mt-0.5" style="color:#a0948a;">Mar 29 - Apr 5 (7-day window)</p>
         </div>
-        <span id="row-count" class="text-xs rounded-full px-3 py-0.5" style="background:#ede8e1;color:#7a6e66;border:1px solid #d6cfc4;">— rows</span>
+        <span id="row-count" class="text-xs rounded-full px-3 py-0.5" style="background:#ede8e1;color:#7a6e66;">— rows</span>
       </div>
       <div class="overflow-x-auto">
-        <div class="table-scroll-wrapper" style="max-height:360px; overflow-y:auto;">
+        <div class="table-scroll-wrapper" style="max-height:400px; overflow-y:auto;">
           <table class="w-full text-xs">
             <thead class="sticky top-0 z-10" style="background:#f4f1ec;border-bottom:1px solid #d6cfc4;">
               <tr>
-                <th class="text-left px-3 py-2 font-semibold uppercase tracking-wide whitespace-nowrap" style="color:#8a7e72;">Airline</th>
-                <th class="text-left px-3 py-2 font-semibold uppercase tracking-wide whitespace-nowrap" style="color:#8a7e72;">Flight #</th>
-                <th class="text-left px-3 py-2 font-semibold uppercase tracking-wide whitespace-nowrap" style="color:#8a7e72;">Destination</th>
-                <th class="text-left px-3 py-2 font-semibold uppercase tracking-wide whitespace-nowrap" style="color:#8a7e72;">Date</th>
-                <th class="text-left px-3 py-2 font-semibold uppercase tracking-wide whitespace-nowrap" style="color:#8a7e72;">Dep. Time</th>
-                <th class="text-left px-3 py-2 font-semibold uppercase tracking-wide whitespace-nowrap" style="color:#8a7e72;">Category</th>
-                <th class="text-left px-3 py-2 font-semibold uppercase tracking-wide whitespace-nowrap" style="color:#8a7e72;">Live Track</th>
+                <th class="text-left px-3 py-2 font-semibold uppercase" style="color:#8a7e72;">Airline</th>
+                <th class="text-left px-3 py-2 font-semibold uppercase" style="color:#8a7e72;">Flight</th>
+                <th class="text-left px-3 py-2 font-semibold uppercase" style="color:#8a7e72;">Destination</th>
+                <th class="text-left px-3 py-2 font-semibold uppercase" style="color:#8a7e72;">Date</th>
+                <th class="text-left px-3 py-2 font-semibold uppercase" style="color:#8a7e72;">Time</th>
+                <th class="text-left px-3 py-2 font-semibold uppercase" style="color:#8a7e72;">Category</th>
+                <th class="text-left px-3 py-2 font-semibold uppercase" style="color:#8a7e72;">Track</th>
               </tr>
             </thead>
             <tbody id="flights-tbody">
-              <tr><td colspan="7" class="text-center py-10" style="color:#b0a898;">Loading data…</td></tr>
+              <tr><td colspan="7" class="text-center py-10" style="color:#b0a898;">Loading…</td></tr>
             </tbody>
           </table>
         </div>
@@ -96,12 +85,12 @@
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
         <div>
           <h2 class="font-semibold" style="color:#2c3e2d;">Flight Volume Trend</h2>
-          <p class="text-xs" style="color:#a0948a;">Mar 29 onwards — Total Scheduled vs Departed flights</p>
+          <p class="text-xs" style="color:#a0948a;">Scheduled vs Departed</p>
         </div>
-        <div class="flex flex-wrap gap-2">
+        <div class="flex gap-2">
           <button id="status-all" class="px-3 py-1 rounded text-xs font-medium text-white" style="background:#4a7c59;" onclick="filterChartByStatus('all')">All</button>
-          <button id="status-expected" class="px-3 py-1 rounded text-xs font-medium" style="background:#ede8e1;color:#5c5040;border:1px solid #c8bfb4;" onclick="filterChartByStatus('expected')">Scheduled</button>
-          <button id="status-departed" class="px-3 py-1 rounded text-xs font-medium" style="background:#ede8e1;color:#5c5040;border:1px solid #c8bfb4;" onclick="filterChartByStatus('departed')">Departed</button>
+          <button id="status-expected" class="px-3 py-1 rounded text-xs font-medium" style="background:#ede8e1;color:#5c5040;" onclick="filterChartByStatus('expected')">Scheduled</button>
+          <button id="status-departed" class="px-3 py-1 rounded text-xs font-medium" style="background:#ede8e1;color:#5c5040;" onclick="filterChartByStatus('departed')">Departed</button>
         </div>
       </div>
       <canvas id="volumeChart"></canvas>
@@ -112,56 +101,50 @@
       <h2 class="font-semibold mb-4" style="color:#2c3e2d;">Official Advisory Summaries</h2>
       <div id="advisories-container" class="grid grid-cols-1 sm:grid-cols-3 gap-4"></div>
     </section>
-
   </main>
 
   <footer class="text-center text-xs py-6 mt-4" style="border-top:1px solid #d6cfc4;color:#a0948a;">
-    Gulf Flights Watch Live &nbsp;•&nbsp; Data sourced from AeroDataBox, official airline pages, and Flightradar24 &nbsp;•&nbsp; Not for operational flight planning
-    <br/><span style="color:#b0a898;">Created by: <a href="https://www.linkedin.com/in/limwuiliang/" target="_blank" rel="noopener" style="color:#4a7c59;text-decoration:underline;">Wui-Liang Lim</a></span>
+    Gulf Flights Watch Live &nbsp;•&nbsp; Data sourced from AeroDataBox, official airline pages, and Flightradar24
+    <br/><span style="color:#b0a898;">Created by: <a href="https://www.linkedin.com/in/limwuiliang/" target="_blank" style="color:#4a7c59;text-decoration:underline;">Wui-Liang Lim</a></span>
   </footer>
 
   <script>
-    // ─────────────────────────────────────────────
-    //  INLINE_DATA (fallback if fetch fails)
-    // ─────────────────────────────────────────────
-    const INLINE_DATA = { "lastScan": "2026-03-29T03:25:04Z", "scanVersion": 4, "flightVolumeHistory": [ { "date": "2026-03-28", "emirates_expected": 72, "emirates_departed": 73, "qatar_expected": 21, "qatar_departed": 22, "etihad_expected": 35, "etihad_departed": 36 }, { "date": "2026-03-29", "emirates_expected": 85, "emirates_departed": 88, "qatar_expected": 128, "qatar_departed": 128, "etihad_expected": 39, "etihad_departed": 39 }, { "date": "2026-03-30", "emirates_expected": 87, "emirates_departed": 88, "qatar_expected": 130, "qatar_departed": 131, "etihad_expected": 40, "etihad_departed": 41 }, { "date": "2026-03-31", "emirates_expected": 86, "emirates_departed": 87, "qatar_expected": 130, "qatar_departed": 131, "etihad_expected": 40, "etihad_departed": 41 }, { "date": "2026-04-01", "emirates_expected": 88, "emirates_departed": 88, "qatar_expected": 133, "qatar_departed": 133, "etihad_expected": 50, "etihad_departed": 51 }, { "date": "2026-04-02", "emirates_expected": 88, "emirates_departed": 88, "qatar_expected": 133, "qatar_departed": 134, "etihad_expected": 59, "etihad_departed": 60 } ], "airlines": [ { "id": "emirates", "name": "Emirates", "iata": "EK", "hub": "DXB", "color": "#D71921", "status": "REDUCED", "statusLabel": "Reduced Schedule", "source": "https://www.emirates.com/", "lastUpdated": "2026-03-28", "summary": "Operating reduced schedule. Travel waiver in effect Feb 28 - Apr 15.", "advisory": { "affectedDates": { "from": "2026-02-28", "to": "2026-04-15" }, "rebookBy": "2026-05-31", "waiverChanges": 9, "airspaceStatus": "PARTIAL_REOPEN" }, "flights": [] }, { "id": "qatar", "name": "Qatar Airways", "iata": "QR", "hub": "DOH", "color": "#5C0632", "status": "RESTRICTED", "statusLabel": "Restricted / Limited Corridor", "source": "https://www.qatarairways.com/", "lastUpdated": "2026-03-26", "summary": "90+ destinations restored via dedicated flight corridors. Waiver: Feb 28-Jun 15 eligible for free changes or refund.", "advisory": { "affectedDates": { "from": "2026-02-28", "to": "2026-06-15" }, "rebookBy": "2026-10-31", "waiverChanges": null, "airspaceStatus": "DEDICATED_CORRIDOR" }, "flights": [] }, { "id": "etihad", "name": "Etihad Airways", "iata": "EY", "hub": "AUH", "color": "#BD8B13", "status": "UNKNOWN", "statusLabel": "Data Unavailable", "source": "https://www.etihad.com/", "lastUpdated": null, "summary": "Abu Dhabi-based. May face corridor restrictions. Check etihad.com directly.", "advisory": null, "flights": [] } ] };
-
     let scanData = null;
+    let allFlights = [];
     let volumeChart = null;
     let currentStatusFilter = 'all';
-    let allRows = [];
 
-    // ─────────────────────────────────────────────
-    //  Load & Render
-    // ─────────────────────────────────────────────
+    const MIN_DATE = '2026-03-29';
+    const MAX_DATE = '2026-04-05';
+
     document.addEventListener('DOMContentLoaded', async function() {
       try {
         const res = await fetch('./data/scan_results.json?v=' + Date.now());
-        if (res.ok) {
-          scanData = await res.json();
-        } else {
-          scanData = INLINE_DATA;
-        }
+        scanData = res.ok ? await res.json() : null;
       } catch (e) {
-        scanData = INLINE_DATA;
+        console.error('Failed to load data:', e);
       }
-      
-      // Set date filter bounds: Mar 29 anchor + 6 days (Mar 29 - Apr 5)
-      const minDate = '2026-03-29';
-      const maxDate = '2026-04-05';
-      document.getElementById('filter-date').min = minDate;
-      document.getElementById('filter-date').max = maxDate;
-      
+
+      if (!scanData) {
+        document.getElementById('flights-tbody').innerHTML = '<tr><td colspan="7" style="color:red;padding:20px;">Failed to load data</td></tr>';
+        return;
+      }
+
+      loadData();
+    });
+
+    function loadData() {
       renderLastScan();
       renderCards();
+      buildFlightsList();
       renderTable();
       renderChart();
       renderAdvisories();
-    });
+    }
 
     function renderLastScan() {
       const d = new Date(scanData.lastScan);
-      document.getElementById('last-scan-label').textContent = 'Last scan: ' + d.toLocaleString('en-SG', { timeZone: 'Asia/Singapore', dateStyle: 'medium', timeStyle: 'short' }) + ' SGT';
+      document.getElementById('last-scan-label').textContent = 'Last scan: ' + d.toLocaleString('en-SG', { timeZone: 'Asia/Singapore', dateStyle: 'short', timeStyle: 'short' });
     }
 
     function renderCards() {
@@ -172,221 +155,162 @@
         card.className = `rounded-xl border p-4 status-${a.status}`;
         card.innerHTML = `
           <div class="flex items-center justify-between mb-2">
-            <span class="font-bold text-base" style="color:${a.color}">${a.name}</span>
+            <span class="font-bold" style="color:${a.color}">${a.name}</span>
             <span class="text-xs font-semibold px-2 py-0.5 rounded-full border" style="background:inherit;color:inherit;">${a.statusLabel}</span>
           </div>
-          <div class="text-xs mt-1" style="color:inherit;">${a.hub} Hub · ${a.iata}</div>
+          <div class="text-xs mt-1" style="color:inherit;">${a.hub} Hub</div>
           <div class="text-xs mt-2 leading-relaxed" style="color:inherit;">${a.summary}</div>
         `;
         container.appendChild(card);
       }
     }
 
-    function renderTable() {
-      allRows = [];
-      const minDateStr = '2026-03-29';
-      const maxDateStr = '2026-04-05';
-      
-      // Collect all flights
+    function buildFlightsList() {
+      allFlights = [];
       for (const a of scanData.airlines) {
         for (const f of (a.flights || [])) {
-          allRows.push({ airline: a, flight: f, date: f.date });
+          const date = f.date || '';
+          if (date >= MIN_DATE && date <= MAX_DATE) {
+            allFlights.push({ airline: a, flight: f, date: date });
+          }
         }
       }
-      
-      console.log(`[renderTable] Total flights loaded: ${allRows.length}`);
-      
-      // Filter to window for initial display
-      const windowFiltered = allRows.filter(r => r.date >= minDateStr && r.date <= maxDateStr);
-      console.log(`[renderTable] After date filter (${minDateStr} to ${maxDateStr}): ${windowFiltered.length} flights`);
-      
-      // Set date filter bounds
-      document.getElementById('filter-date').min = minDateStr;
-      document.getElementById('filter-date').max = maxDateStr;
-      
-      // Render the filtered view
-      renderRows(windowFiltered);
+      console.log(`Loaded ${allFlights.length} flights in window (${MIN_DATE} to ${MAX_DATE})`);
     }
 
-    function renderRows(rows) {
+    function renderTable() {
       const tbody = document.getElementById('flights-tbody');
-      document.getElementById('row-count').textContent = rows.length + ' row' + (rows.length !== 1 ? 's' : '');
-      
-      if (rows.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-10" style="color:#b0a898;">No flights match filters</td></tr>';
+      document.getElementById('row-count').textContent = allFlights.length + ' row' + (allFlights.length !== 1 ? 's' : '');
+
+      if (allFlights.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-10" style="color:#b0a898;">No flights</td></tr>';
         return;
       }
 
-      tbody.innerHTML = rows.map(r => {
+      tbody.innerHTML = allFlights.map(r => {
         const f = r.flight;
         const a = r.airline;
-        const catClass = f.category.includes('Evacuation') ? 'badge-Evacuation' : f.category === 'Restricted' ? 'badge-Restricted' : 'badge-Standard';
-        const flightSlug = (f.flightNumber || '').replace(/[^A-Z0-9]/gi, '').toLowerCase();
-        const fr24Url = `https://www.flightradar24.com/data/flights/${flightSlug}`;
-        const trackLink = f.flightNumber.includes('-') ? '-' : `<a href="${fr24Url}" target="_blank" style="color:#4a7c59;text-decoration:underline;">FR24↗</a>`;
+        const cat = f.category || 'Standard';
+        const catClass = cat.includes('Evacuation') ? 'badge-Evacuation' : cat === 'Restricted' ? 'badge-Restricted' : 'badge-Standard';
+        const fr24 = `https://www.flightradar24.com/data/flights/${(f.flightNumber || '').toLowerCase().replace(/[^a-z0-9]/g, '')}`;
         return `
           <tr style="border-bottom:1px solid #ede8e1;">
             <td class="px-3 py-1.5 font-semibold" style="color:${a.color}">${a.iata}</td>
-            <td class="px-3 py-1.5 font-mono">${f.flightNumber}</td>
-            <td class="px-3 py-1.5">${f.destinationName || f.destination}</td>
-            <td class="px-3 py-1.5">${r.date}</td>
-            <td class="px-3 py-1.5">${f.time}</td>
-            <td class="px-3 py-1.5"><span class="text-xs font-semibold px-2 py-1 rounded ${catClass}">${f.category}</span></td>
-            <td class="px-3 py-1.5">${trackLink}</td>
+            <td class="px-3 py-1.5 font-mono">${f.flightNumber || '—'}</td>
+            <td class="px-3 py-1.5">${f.destinationName || f.destination || '—'}</td>
+            <td class="px-3 py-1.5">${f.date || '—'}</td>
+            <td class="px-3 py-1.5">${f.time || '—'}</td>
+            <td class="px-3 py-1.5"><span class="text-xs font-semibold px-2 py-1 rounded ${catClass}">${cat}</span></td>
+            <td class="px-3 py-1.5"><a href="${fr24}" target="_blank" style="color:#4a7c59;text-decoration:underline;">FR24↗</a></td>
           </tr>
         `;
       }).join('');
     }
 
     function applyFilters() {
-      const minDateStr = '2026-03-29';
-      const maxDateStr = '2026-04-05';
       const airline = document.getElementById('filter-airline').value;
-      const cat = document.getElementById('filter-category').value;
-      const dest = (document.getElementById('filter-dest').value || '').trim().toLowerCase();
       const date = document.getElementById('filter-date').value;
 
-      const filtered = allRows.filter(r => {
-        // Always apply window filter (Mar 29 - Apr 5)
-        if (r.date < minDateStr || r.date > maxDateStr) return false;
+      const filtered = allFlights.filter(r => {
         if (airline !== 'all' && r.airline.id !== airline) return false;
-        if (cat !== 'all' && r.flight.category !== cat) return false;
-        if (dest && !(r.flight.destination.toLowerCase().includes(dest) || (r.flight.destinationName || '').toLowerCase().includes(dest))) return false;
         if (date && r.date !== date) return false;
         return true;
       });
-      renderRows(filtered);
+
+      document.getElementById('row-count').textContent = filtered.length + ' row' + (filtered.length !== 1 ? 's' : '');
+      const tbody = document.getElementById('flights-tbody');
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="text-center py-10" style="color:#b0a898;">No flights match</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(r => {
+        const f = r.flight;
+        const a = r.airline;
+        const cat = f.category || 'Standard';
+        const catClass = cat.includes('Evacuation') ? 'badge-Evacuation' : cat === 'Restricted' ? 'badge-Restricted' : 'badge-Standard';
+        const fr24 = `https://www.flightradar24.com/data/flights/${(f.flightNumber || '').toLowerCase().replace(/[^a-z0-9]/g, '')}`;
+        return `
+          <tr style="border-bottom:1px solid #ede8e1;">
+            <td class="px-3 py-1.5 font-semibold" style="color:${a.color}">${a.iata}</td>
+            <td class="px-3 py-1.5 font-mono">${f.flightNumber || '—'}</td>
+            <td class="px-3 py-1.5">${f.destinationName || f.destination || '—'}</td>
+            <td class="px-3 py-1.5">${f.date || '—'}</td>
+            <td class="px-3 py-1.5">${f.time || '—'}</td>
+            <td class="px-3 py-1.5"><span class="text-xs font-semibold px-2 py-1 rounded ${catClass}">${cat}</span></td>
+            <td class="px-3 py-1.5"><a href="${fr24}" target="_blank" style="color:#4a7c59;text-decoration:underline;">FR24↗</a></td>
+          </tr>
+        `;
+      }).join('');
     }
 
     function clearFilters() {
       document.getElementById('filter-airline').value = 'all';
-      document.getElementById('filter-category').value = 'all';
-      document.getElementById('filter-dest').value = '';
       document.getElementById('filter-date').value = '';
-      renderRows(allRows);
+      renderTable();
     }
 
     function filterChartByStatus(status) {
       currentStatusFilter = status;
-      updateChartByStatus();
-      document.getElementById('status-all').style.background = status === 'all' ? '#4a7c59' : '#ede8e1';
-      document.getElementById('status-all').style.color = status === 'all' ? '#fff' : '#5c5040';
-      document.getElementById('status-expected').style.background = status === 'expected' ? '#4a7c59' : '#ede8e1';
-      document.getElementById('status-expected').style.color = status === 'expected' ? '#fff' : '#5c5040';
-      document.getElementById('status-departed').style.background = status === 'departed' ? '#4a7c59' : '#ede8e1';
-      document.getElementById('status-departed').style.color = status === 'departed' ? '#fff' : '#5c5040';
+      const btns = ['status-all', 'status-expected', 'status-departed'];
+      btns.forEach(id => {
+        const btn = document.getElementById(id);
+        btn.style.background = id === `status-${status}` ? '#4a7c59' : '#ede8e1';
+        btn.style.color = id === `status-${status}` ? '#fff' : '#5c5040';
+      });
+      updateChart();
     }
 
-    function updateChartByStatus() {
+    function renderChart() {
+      updateChart();
+    }
+
+    function updateChart() {
       if (!scanData || !scanData.flightVolumeHistory) return;
-      // Filter to 7-day window starting Mar 29 (skip Mar 28)
-      const history = scanData.flightVolumeHistory.filter(d => d.date >= '2026-03-29' && d.date <= '2026-04-05');
+      const history = scanData.flightVolumeHistory.filter(d => d.date >= MIN_DATE && d.date <= MAX_DATE);
       const labels = history.map(d => d.date);
       const datasets = [];
 
-      // Group by airline: Emirates, Qatar, Etihad (each with Scheduled + Departed)
       if (currentStatusFilter === 'all' || currentStatusFilter === 'expected') {
-        datasets.push(
-          { label: 'Emirates (Scheduled)', data: history.map(d => d.emirates_scheduled || 0), borderColor: '#D71921', borderDash: [5,5], backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 3 }
-        );
+        datasets.push({ label: 'Emirates (Scheduled)', data: history.map(d => d.emirates_scheduled || 0), borderColor: '#D71921', borderDash: [5, 5], backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 3 });
+        datasets.push({ label: 'Qatar (Scheduled)', data: history.map(d => d.qatar_scheduled || 0), borderColor: '#5C0632', borderDash: [5, 5], backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 3 });
+        datasets.push({ label: 'Etihad (Scheduled)', data: history.map(d => d.etihad_scheduled || 0), borderColor: '#BD8B13', borderDash: [5, 5], backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 3 });
       }
       if (currentStatusFilter === 'all' || currentStatusFilter === 'departed') {
-        datasets.push(
-          { label: 'Emirates (Departed)', data: history.map(d => d.emirates_departed || 0), borderColor: '#D71921', backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 4 }
-        );
-      }
-      
-      if (currentStatusFilter === 'all' || currentStatusFilter === 'expected') {
-        datasets.push(
-          { label: 'Qatar (Scheduled)', data: history.map(d => d.qatar_scheduled || 0), borderColor: '#5C0632', borderDash: [5,5], backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 3 }
-        );
-      }
-      if (currentStatusFilter === 'all' || currentStatusFilter === 'departed') {
-        datasets.push(
-          { label: 'Qatar (Departed)', data: history.map(d => d.qatar_departed || 0), borderColor: '#5C0632', backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 4 }
-        );
-      }
-      
-      if (currentStatusFilter === 'all' || currentStatusFilter === 'expected') {
-        datasets.push(
-          { label: 'Etihad (Scheduled)', data: history.map(d => d.etihad_scheduled || 0), borderColor: '#B8860B', borderDash: [5,5], backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 3 }
-        );
-      }
-      if (currentStatusFilter === 'all' || currentStatusFilter === 'departed') {
-        datasets.push(
-          { label: 'Etihad (Departed)', data: history.map(d => d.etihad_departed || 0), borderColor: '#B8860B', backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 4 }
-        );
+        datasets.push({ label: 'Emirates (Departed)', data: history.map(d => d.emirates_departed || 0), borderColor: '#D71921', backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 4 });
+        datasets.push({ label: 'Qatar (Departed)', data: history.map(d => d.qatar_departed || 0), borderColor: '#5C0632', backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 4 });
+        datasets.push({ label: 'Etihad (Departed)', data: history.map(d => d.etihad_departed || 0), borderColor: '#BD8B13', backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 4 });
       }
 
       const ctx = document.getElementById('volumeChart').getContext('2d');
       if (volumeChart) volumeChart.destroy();
-
       volumeChart = new Chart(ctx, {
         type: 'line',
         data: { labels, datasets },
         options: {
           responsive: true,
-          interaction: { mode: 'index', intersect: false },
-          plugins: {
-            legend: { labels: { color: '#5c5040', font: { size: 11 } }, position: 'bottom' },
-            title: { display: false },
-            tooltip: {
-              backgroundColor: 'rgba(255, 255, 255, 0.95)',
-              titleColor: '#2c3e2d',
-              bodyColor: '#5c5040',
-              borderColor: '#d6cfc4',
-              borderWidth: 1,
-              padding: 12,
-              titleFont: { weight: 'bold', size: 12 },
-              bodyFont: { size: 11 },
-              callbacks: {
-                title: function(context) {
-                  return 'Date: ' + context[0].label;
-                },
-                label: function(context) {
-                  const label = context.dataset.label;
-                  const value = context.parsed.y;
-                  return label + ': ' + value;
-                },
-                afterLabel: function(context) {
-                  return '';
-                }
-              }
-            }
-          },
-          scales: {
-            y: { beginAtZero: true, ticks: { color: '#8a7e72', font: { size: 10 } }, grid: { color: '#e0dbd4' } },
-            x: { ticks: { color: '#8a7e72', font: { size: 10 } }, grid: { color: '#e0dbd4' } }
-          }
+          maintainAspectRatio: true,
+          plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 15 } } },
+          scales: { y: { beginAtZero: true, title: { display: true, text: 'Flights' } } }
         }
       });
-    }
-
-    function renderChart() {
-      updateChartByStatus();
     }
 
     function renderAdvisories() {
       const container = document.getElementById('advisories-container');
       container.innerHTML = '';
       for (const a of scanData.airlines) {
-        if (!a.advisory) continue;
+        const adv = a.advisory || {};
         const card = document.createElement('div');
-        card.className = 'rounded-xl border p-4 text-xs';
-        card.style.borderColor = '#d6cfc4';
+        card.className = 'p-4 rounded-lg' + (a.status === 'REDUCED' ? ' status-REDUCED' : a.status === 'RESTRICTED' ? ' status-RESTRICTED' : ' status-NORMAL');
         card.innerHTML = `
-          <div class="font-bold mb-2" style="color:${a.color};">${a.name}</div>
-          <div style="color:#5c5040;line-height:1.5;">
-            <div><strong>Affected:</strong> ${a.advisory.affectedDates.from} to ${a.advisory.affectedDates.to}</div>
-            <div><strong>Rebook by:</strong> ${a.advisory.rebookBy}</div>
-            ${a.advisory.waiverChanges ? `<div><strong>Free changes:</strong> ${a.advisory.waiverChanges}</div>` : ''}
-            ${a.source ? `<div><a href="${a.source}" target="_blank" style="color:#4a7c59;text-decoration:underline;">Official advisory ↗</a></div>` : ''}
-          </div>
+          <h3 class="font-semibold mb-2" style="color:inherit;">${a.name}</h3>
+          <p class="text-xs leading-relaxed mb-2" style="color:inherit;">${a.summary || 'No data available'}</p>
+          ${adv.affectedDates ? `<p class="text-xs" style="color:inherit;"><strong>Affected:</strong> ${adv.affectedDates.from} to ${adv.affectedDates.to}</p>` : ''}
         `;
         container.appendChild(card);
       }
     }
   </script>
-
 </body>
 </html>
