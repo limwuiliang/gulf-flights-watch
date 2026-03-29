@@ -266,17 +266,36 @@
       const labels = history.map(d => d.date);
       const datasets = [];
 
+      // Group by airline: Emirates, Qatar, Etihad (each with Expected + Departed)
       if (currentStatusFilter === 'all' || currentStatusFilter === 'expected') {
         datasets.push(
-          { label: 'Emirates (Expected)', data: history.map(d => d.emirates_expected || 0), borderColor: '#D71921', borderDash: [5,5], backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 3 },
-          { label: 'Qatar (Expected)', data: history.map(d => d.qatar_expected || 0), borderColor: '#5C0632', borderDash: [5,5], backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 3 },
+          { label: 'Emirates (Expected)', data: history.map(d => d.emirates_expected || 0), borderColor: '#D71921', borderDash: [5,5], backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 3 }
+        );
+      }
+      if (currentStatusFilter === 'all' || currentStatusFilter === 'departed') {
+        datasets.push(
+          { label: 'Emirates (Departed)', data: history.map(d => d.emirates_departed || 0), borderColor: '#D71921', backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 4 }
+        );
+      }
+      
+      if (currentStatusFilter === 'all' || currentStatusFilter === 'expected') {
+        datasets.push(
+          { label: 'Qatar (Expected)', data: history.map(d => d.qatar_expected || 0), borderColor: '#5C0632', borderDash: [5,5], backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 3 }
+        );
+      }
+      if (currentStatusFilter === 'all' || currentStatusFilter === 'departed') {
+        datasets.push(
+          { label: 'Qatar (Departed)', data: history.map(d => d.qatar_departed || 0), borderColor: '#5C0632', backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 4 }
+        );
+      }
+      
+      if (currentStatusFilter === 'all' || currentStatusFilter === 'expected') {
+        datasets.push(
           { label: 'Etihad (Expected)', data: history.map(d => d.etihad_expected || 0), borderColor: '#B8860B', borderDash: [5,5], backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 3 }
         );
       }
       if (currentStatusFilter === 'all' || currentStatusFilter === 'departed') {
         datasets.push(
-          { label: 'Emirates (Departed)', data: history.map(d => d.emirates_departed || 0), borderColor: '#D71921', backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 4 },
-          { label: 'Qatar (Departed)', data: history.map(d => d.qatar_departed || 0), borderColor: '#5C0632', backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 4 },
           { label: 'Etihad (Departed)', data: history.map(d => d.etihad_departed || 0), borderColor: '#B8860B', backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 4 }
         );
       }
@@ -292,7 +311,30 @@
           interaction: { mode: 'index', intersect: false },
           plugins: {
             legend: { labels: { color: '#5c5040', font: { size: 11 } }, position: 'bottom' },
-            title: { display: false }
+            title: { display: false },
+            tooltip: {
+              backgroundColor: 'rgba(255, 255, 255, 0.95)',
+              titleColor: '#2c3e2d',
+              bodyColor: '#5c5040',
+              borderColor: '#d6cfc4',
+              borderWidth: 1,
+              padding: 12,
+              titleFont: { weight: 'bold', size: 12 },
+              bodyFont: { size: 11 },
+              callbacks: {
+                title: function(context) {
+                  return 'Date: ' + context[0].label;
+                },
+                label: function(context) {
+                  const label = context.dataset.label;
+                  const value = context.parsed.y;
+                  return label + ': ' + value;
+                },
+                afterLabel: function(context) {
+                  return '';
+                }
+              }
+            }
           },
           scales: {
             y: { beginAtZero: true, ticks: { color: '#8a7e72', font: { size: 10 } }, grid: { color: '#e0dbd4' } },
