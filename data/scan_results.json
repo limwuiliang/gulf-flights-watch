@@ -38404,6 +38404,15 @@
                                     "date":  "2026-04-03",
                                     "etihad_departed":  0,
                                     "emirates_departed":  0
+                                },
+                                {
+                                    "emirates_scheduled":  161,
+                                    "qatar_scheduled":  270,
+                                    "etihad_scheduled":  104,
+                                    "qatar_departed":  0,
+                                    "date":  "2026-04-04",
+                                    "etihad_departed":  0,
+                                    "emirates_departed":  0
                                 }
                             ]
 }
