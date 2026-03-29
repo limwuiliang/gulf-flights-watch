@@ -89,6 +89,8 @@
     {"date": "2026-03-30", "emirates_expected": 87, "emirates_departed": 88, "qatar_expected": 130, "qatar_departed": 130, "etihad_expected": 40, "etihad_departed": 41},
     {"date": "2026-03-31", "emirates_expected": 86, "emirates_departed": 87, "qatar_expected": 130, "qatar_departed": 130, "etihad_expected": 40, "etihad_departed": 41},
     {"date": "2026-04-01", "emirates_expected": 88, "emirates_departed": 88, "qatar_expected": 133, "qatar_departed": 133, "etihad_expected": 50, "etihad_departed": 51},
-    {"date": "2026-04-02", "emirates_expected": 88, "emirates_departed": 88, "qatar_expected": 133, "qatar_departed": 134, "etihad_expected": 59, "etihad_departed": 60}
+    {"date": "2026-04-02", "emirates_expected": 88, "emirates_departed": 88, "qatar_expected": 133, "qatar_departed": 134, "etihad_expected": 59, "etihad_departed": 60},
+    {"date": "2026-04-03", "emirates_expected": 89, "emirates_departed": 88, "qatar_expected": 135, "qatar_departed": 134, "etihad_expected": 62, "etihad_departed": 61},
+    {"date": "2026-04-04", "emirates_expected": 90, "emirates_departed": 89, "qatar_expected": 137, "qatar_departed": 136, "etihad_expected": 65, "etihad_departed": 64}
   ]
 }
