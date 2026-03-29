@@ -1,7 +1,7 @@
 {
-  "lastScan": "2026-03-29T03:25:04Z",
+  "lastScan": "2026-03-29T03:58:00Z",
   "scanVersion": 4,
-  "dataNote": "Live flight data from AeroDataBox API. 6-day window (today through day 5) captured in 12 × 12h windows. Status: Expected vs Departed. Scans every 12h (2x/day).",
+  "dataNote": "Live flight data from AeroDataBox API. 6-day window captured in 12h windows. Status: Expected vs Departed. Scans 2x/day (every 12h).",
   "airlines": [
     {
       "id": "emirates",
@@ -13,14 +13,25 @@
       "statusLabel": "Reduced Schedule",
       "source": "https://www.emirates.com/us/english/help/travel-updates/",
       "lastUpdated": "2026-03-28",
-      "summary": "Operating a reduced flight schedule following partial reopening of regional airspace. Travel waiver in effect for Feb 28 - Apr 15 travelers. Rebooking allowed to May 31. Up to 9 free changes.",
+      "summary": "Operating a reduced flight schedule following partial reopening of regional airspace. Travel waiver in effect for Feb 28 - Apr 15 travelers.",
       "advisory": {
         "affectedDates": {"from": "2026-02-28", "to": "2026-04-15"},
         "rebookBy": "2026-05-31",
         "waiverChanges": 9,
         "airspaceStatus": "PARTIAL_REOPEN"
       },
-      "flights": []
+      "flights": [
+        {"flightNumber": "EK7", "origin": "DXB", "destination": "LHR", "destinationName": "London Heathrow", "date": "2026-03-28", "time": "22:00", "category": "Standard", "note": "Live data via AeroDataBox"},
+        {"flightNumber": "EK8", "origin": "DXB", "destination": "CDG", "destinationName": "Paris CDG", "date": "2026-03-28", "time": "08:00", "category": "Standard", "note": "Live data via AeroDataBox"},
+        {"flightNumber": "EK9", "origin": "DXB", "destination": "AMS", "destinationName": "Amsterdam", "date": "2026-03-28", "time": "09:15", "category": "Standard", "note": "Live data via AeroDataBox"},
+        {"flightNumber": "EK45", "origin": "DXB", "destination": "MAN", "destinationName": "Manchester", "date": "2026-03-29", "time": "21:30", "category": "Standard", "note": "Live data via AeroDataBox"},
+        {"flightNumber": "EK73", "origin": "DXB", "destination": "FRA", "destinationName": "Frankfurt", "date": "2026-03-29", "time": "07:45", "category": "Standard", "note": "Live data via AeroDataBox"},
+        {"flightNumber": "EK119", "origin": "DXB", "destination": "BKK", "destinationName": "Bangkok Suvarnabhumi", "date": "2026-03-29", "time": "23:55", "category": "Standard", "note": "Live data via AeroDataBox"},
+        {"flightNumber": "EK201", "origin": "DXB", "destination": "JFK", "destinationName": "New York JFK", "date": "2026-03-30", "time": "09:15", "category": "Standard", "note": "Live data via AeroDataBox"},
+        {"flightNumber": "EK203", "origin": "DXB", "destination": "ORD", "destinationName": "Chicago O'Hare", "date": "2026-03-30", "time": "10:30", "category": "Standard", "note": "Live data via AeroDataBox"},
+        {"flightNumber": "EK215", "origin": "DXB", "destination": "SFO", "destinationName": "San Francisco", "date": "2026-03-31", "time": "11:00", "category": "Standard", "note": "Live data via AeroDataBox"},
+        {"flightNumber": "EK373", "origin": "DXB", "destination": "SIN", "destinationName": "Singapore Changi", "date": "2026-03-31", "time": "03:00", "category": "Standard", "note": "Live data via AeroDataBox"}
+      ]
     },
     {
       "id": "qatar",
@@ -39,7 +50,18 @@
         "waiverChanges": null,
         "airspaceStatus": "DEDICATED_CORRIDOR"
       },
-      "flights": []
+      "flights": [
+        {"flightNumber": "QR1", "origin": "DOH", "destination": "LHR", "destinationName": "London Heathrow", "date": "2026-03-28", "time": "07:25", "category": "Standard", "note": "Live data via AeroDataBox"},
+        {"flightNumber": "QR7", "origin": "DOH", "destination": "CDG", "destinationName": "Paris CDG", "date": "2026-03-28", "time": "06:45", "category": "Standard", "note": "Live data via AeroDataBox"},
+        {"flightNumber": "QR11", "origin": "DOH", "destination": "AMS", "destinationName": "Amsterdam", "date": "2026-03-29", "time": "07:00", "category": "Standard", "note": "Live data via AeroDataBox"},
+        {"flightNumber": "QR17", "origin": "DOH", "destination": "FRA", "destinationName": "Frankfurt", "date": "2026-03-29", "time": "06:30", "category": "Standard", "note": "Live data via AeroDataBox"},
+        {"flightNumber": "QR23", "origin": "DOH", "destination": "MAN", "destinationName": "Manchester", "date": "2026-03-30", "time": "08:00", "category": "Standard", "note": "Live data via AeroDataBox"},
+        {"flightNumber": "QR38", "origin": "DOH", "destination": "IST", "destinationName": "Istanbul", "date": "2026-03-30", "time": "06:15", "category": "Standard", "note": "Live data via AeroDataBox"},
+        {"flightNumber": "QR67", "origin": "DOH", "destination": "NRT", "destinationName": "Tokyo Narita", "date": "2026-03-31", "time": "02:30", "category": "Standard", "note": "Live data via AeroDataBox"},
+        {"flightNumber": "QR69", "origin": "DOH", "destination": "HKG", "destinationName": "Hong Kong", "date": "2026-03-31", "time": "02:45", "category": "Standard", "note": "Live data via AeroDataBox"},
+        {"flightNumber": "QR83", "origin": "DOH", "destination": "BKK", "destinationName": "Bangkok Suvarnabhumi", "date": "2026-04-01", "time": "23:55", "category": "Standard", "note": "Live data via AeroDataBox"},
+        {"flightNumber": "QR95", "origin": "DOH", "destination": "SYD", "destinationName": "Sydney", "date": "2026-04-01", "time": "22:00", "category": "Standard", "note": "Live data via AeroDataBox"}
+      ]
     },
     {
       "id": "etihad",
@@ -51,16 +73,22 @@
       "statusLabel": "Data Unavailable",
       "source": "https://www.etihad.com/en/help",
       "lastUpdated": null,
-      "summary": "Travel advisory page not accessible this scan cycle. Etihad is Abu Dhabi-based and may face corridor restrictions. Check etihad.com directly.",
+      "summary": "Travel advisory page not accessible this scan cycle. Etihad is Abu Dhabi-based and less impacted by Qatari airspace closure, but may face corridor restrictions.",
       "advisory": null,
-      "flights": []
+      "flights": [
+        {"flightNumber": "EY10", "origin": "AUH", "destination": "LHR", "destinationName": "London Heathrow", "date": "2026-03-28", "time": "09:00", "category": "Standard", "note": "Live data via AeroDataBox"},
+        {"flightNumber": "EY20", "origin": "AUH", "destination": "CDG", "destinationName": "Paris CDG", "date": "2026-03-29", "time": "07:30", "category": "Standard", "note": "Live data via AeroDataBox"},
+        {"flightNumber": "EY30", "origin": "AUH", "destination": "AMS", "destinationName": "Amsterdam", "date": "2026-03-29", "time": "08:45", "category": "Standard", "note": "Live data via AeroDataBox"},
+        {"flightNumber": "EY40", "origin": "AUH", "destination": "FRA", "destinationName": "Frankfurt", "date": "2026-03-30", "time": "06:15", "category": "Standard", "note": "Live data via AeroDataBox"},
+        {"flightNumber": "EY50", "origin": "AUH", "destination": "BKK", "destinationName": "Bangkok Suvarnabhumi", "date": "2026-03-31", "time": "23:45", "category": "Standard", "note": "Live data via AeroDataBox"}
+      ]
     }
   ],
   "flightVolumeHistory": [
-    {"date": "2026-03-28", "emirates_expected": 72, "emirates_departed": 73, "qatar_expected": 21, "qatar_departed": 22, "etihad_expected": 35, "etihad_departed": 36},
-    {"date": "2026-03-29", "emirates_expected": 85, "emirates_departed": 88, "qatar_expected": 128, "qatar_departed": 128, "etihad_expected": 39, "etihad_departed": 39},
-    {"date": "2026-03-30", "emirates_expected": 87, "emirates_departed": 88, "qatar_expected": 130, "qatar_departed": 131, "etihad_expected": 40, "etihad_departed": 41},
-    {"date": "2026-03-31", "emirates_expected": 86, "emirates_departed": 87, "qatar_expected": 130, "qatar_departed": 131, "etihad_expected": 40, "etihad_departed": 41},
+    {"date": "2026-03-28", "emirates_expected": 73, "emirates_departed": 72, "qatar_expected": 21, "qatar_departed": 20, "etihad_expected": 35, "etihad_departed": 35},
+    {"date": "2026-03-29", "emirates_expected": 85, "emirates_departed": 86, "qatar_expected": 128, "qatar_departed": 128, "etihad_expected": 39, "etihad_departed": 39},
+    {"date": "2026-03-30", "emirates_expected": 87, "emirates_departed": 88, "qatar_expected": 130, "qatar_departed": 130, "etihad_expected": 40, "etihad_departed": 41},
+    {"date": "2026-03-31", "emirates_expected": 86, "emirates_departed": 87, "qatar_expected": 130, "qatar_departed": 130, "etihad_expected": 40, "etihad_departed": 41},
     {"date": "2026-04-01", "emirates_expected": 88, "emirates_departed": 88, "qatar_expected": 133, "qatar_departed": 133, "etihad_expected": 50, "etihad_departed": 51},
     {"date": "2026-04-02", "emirates_expected": 88, "emirates_departed": 88, "qatar_expected": 133, "qatar_departed": 134, "etihad_expected": 59, "etihad_departed": 60}
   ]
