@@ -187,20 +187,26 @@
       const minDateStr = '2026-03-29';
       const maxDateStr = '2026-04-05';
       let skipped = 0;
+      let included = 0;
+      
+      console.log(`Starting renderTable: min=${minDateStr}, max=${maxDateStr}`);
+      console.log(`scanData.airlines count: ${scanData.airlines.length}`);
       
       for (const a of scanData.airlines) {
+        console.log(`  ${a.name}: ${a.flights.length} flights`);
         for (const f of (a.flights || [])) {
-          const d = f.date || scanData.lastScan.slice(0, 10);
+          const d = (f.date || '').trim();
           // Only include flights within window (Mar 29 - Apr 5)
           if (d >= minDateStr && d <= maxDateStr) {
             allRows.push({ airline: a, flight: f, date: d });
+            included++;
           } else {
             skipped++;
           }
         }
       }
       
-      console.log(`Loaded ${allRows.length} flights in window, skipped ${skipped} outside range`);
+      console.log(`Loaded ${included} flights in window, skipped ${skipped} outside range. Total allRows: ${allRows.length}`);
       
       // Set date filter bounds
       document.getElementById('filter-date').min = minDateStr;
