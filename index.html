@@ -217,7 +217,7 @@
     // ─────────────────────────────────────────────
     let scanData = null;
 
-    async function loadData() {
+    async async function loadData() {
       try {
         const res = await fetch('./data/scan_results.json?v=' + Date.now());
         if (!res.ok) throw new Error('non-200');
