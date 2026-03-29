@@ -269,7 +269,7 @@
       // Group by airline: Emirates, Qatar, Etihad (each with Scheduled + Departed)
       if (currentStatusFilter === 'all' || currentStatusFilter === 'expected') {
         datasets.push(
-          { label: 'Emirates (Scheduled)', data: history.map(d => d.emirates_expected || 0), borderColor: '#D71921', borderDash: [5,5], backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 3 }
+          { label: 'Emirates (Scheduled)', data: history.map(d => d.emirates_scheduled || 0), borderColor: '#D71921', borderDash: [5,5], backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 3 }
         );
       }
       if (currentStatusFilter === 'all' || currentStatusFilter === 'departed') {
@@ -280,7 +280,7 @@
       
       if (currentStatusFilter === 'all' || currentStatusFilter === 'expected') {
         datasets.push(
-          { label: 'Qatar (Scheduled)', data: history.map(d => d.qatar_expected || 0), borderColor: '#5C0632', borderDash: [5,5], backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 3 }
+          { label: 'Qatar (Scheduled)', data: history.map(d => d.qatar_scheduled || 0), borderColor: '#5C0632', borderDash: [5,5], backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 3 }
         );
       }
       if (currentStatusFilter === 'all' || currentStatusFilter === 'departed') {
@@ -291,7 +291,7 @@
       
       if (currentStatusFilter === 'all' || currentStatusFilter === 'expected') {
         datasets.push(
-          { label: 'Etihad (Scheduled)', data: history.map(d => d.etihad_expected || 0), borderColor: '#B8860B', borderDash: [5,5], backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 3 }
+          { label: 'Etihad (Scheduled)', data: history.map(d => d.etihad_scheduled || 0), borderColor: '#B8860B', borderDash: [5,5], backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 3 }
         );
       }
       if (currentStatusFilter === 'all' || currentStatusFilter === 'departed') {
