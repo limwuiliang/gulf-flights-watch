@@ -1,96 +1,1033 @@
 {
-  "lastScan": "2026-03-29T03:58:00Z",
-  "scanVersion": 4,
-  "dataNote": "Live flight data from AeroDataBox API. 6-day window captured in 12h windows. Status: Expected vs Departed. Scans 2x/day (every 12h).",
-  "airlines": [
-    {
-      "id": "emirates",
-      "name": "Emirates",
-      "iata": "EK",
-      "hub": "DXB",
-      "color": "#D71921",
-      "status": "REDUCED",
-      "statusLabel": "Reduced Schedule",
-      "source": "https://www.emirates.com/us/english/help/travel-updates/",
-      "lastUpdated": "2026-03-28",
-      "summary": "Operating a reduced flight schedule following partial reopening of regional airspace. Travel waiver in effect for Feb 28 - Apr 15 travelers.",
-      "advisory": {
-        "affectedDates": {"from": "2026-02-28", "to": "2026-04-15"},
-        "rebookBy": "2026-05-31",
-        "waiverChanges": 9,
-        "airspaceStatus": "PARTIAL_REOPEN"
-      },
-      "flights": [
-        {"flightNumber": "EK7", "origin": "DXB", "destination": "LHR", "destinationName": "London Heathrow", "date": "2026-03-28", "time": "22:00", "category": "Standard", "note": "Live data via AeroDataBox"},
-        {"flightNumber": "EK8", "origin": "DXB", "destination": "CDG", "destinationName": "Paris CDG", "date": "2026-03-28", "time": "08:00", "category": "Standard", "note": "Live data via AeroDataBox"},
-        {"flightNumber": "EK9", "origin": "DXB", "destination": "AMS", "destinationName": "Amsterdam", "date": "2026-03-28", "time": "09:15", "category": "Standard", "note": "Live data via AeroDataBox"},
-        {"flightNumber": "EK45", "origin": "DXB", "destination": "MAN", "destinationName": "Manchester", "date": "2026-03-29", "time": "21:30", "category": "Standard", "note": "Live data via AeroDataBox"},
-        {"flightNumber": "EK73", "origin": "DXB", "destination": "FRA", "destinationName": "Frankfurt", "date": "2026-03-29", "time": "07:45", "category": "Standard", "note": "Live data via AeroDataBox"},
-        {"flightNumber": "EK119", "origin": "DXB", "destination": "BKK", "destinationName": "Bangkok Suvarnabhumi", "date": "2026-03-29", "time": "23:55", "category": "Standard", "note": "Live data via AeroDataBox"},
-        {"flightNumber": "EK201", "origin": "DXB", "destination": "JFK", "destinationName": "New York JFK", "date": "2026-03-30", "time": "09:15", "category": "Standard", "note": "Live data via AeroDataBox"},
-        {"flightNumber": "EK203", "origin": "DXB", "destination": "ORD", "destinationName": "Chicago O'Hare", "date": "2026-03-30", "time": "10:30", "category": "Standard", "note": "Live data via AeroDataBox"},
-        {"flightNumber": "EK215", "origin": "DXB", "destination": "SFO", "destinationName": "San Francisco", "date": "2026-03-31", "time": "11:00", "category": "Standard", "note": "Live data via AeroDataBox"},
-        {"flightNumber": "EK373", "origin": "DXB", "destination": "SIN", "destinationName": "Singapore Changi", "date": "2026-03-31", "time": "03:00", "category": "Standard", "note": "Live data via AeroDataBox"}
-      ]
-    },
-    {
-      "id": "qatar",
-      "name": "Qatar Airways",
-      "iata": "QR",
-      "hub": "DOH",
-      "color": "#5C0632",
-      "status": "RESTRICTED",
-      "statusLabel": "Restricted / Limited Corridor",
-      "source": "https://www.qatarairways.com/en/rebooking-options.html",
-      "lastUpdated": "2026-03-26",
-      "summary": "Resuming expanded network via dedicated flight corridors. 90+ destinations restored as of Mar 26. Schedule valid to Apr 15. Waiver: bookings Feb 28-Jun 15 eligible for free changes or refund.",
-      "advisory": {
-        "affectedDates": {"from": "2026-02-28", "to": "2026-06-15"},
-        "rebookBy": "2026-10-31",
-        "waiverChanges": null,
-        "airspaceStatus": "DEDICATED_CORRIDOR"
-      },
-      "flights": [
-        {"flightNumber": "QR1", "origin": "DOH", "destination": "LHR", "destinationName": "London Heathrow", "date": "2026-03-28", "time": "07:25", "category": "Standard", "note": "Live data via AeroDataBox"},
-        {"flightNumber": "QR7", "origin": "DOH", "destination": "CDG", "destinationName": "Paris CDG", "date": "2026-03-28", "time": "06:45", "category": "Standard", "note": "Live data via AeroDataBox"},
-        {"flightNumber": "QR11", "origin": "DOH", "destination": "AMS", "destinationName": "Amsterdam", "date": "2026-03-29", "time": "07:00", "category": "Standard", "note": "Live data via AeroDataBox"},
-        {"flightNumber": "QR17", "origin": "DOH", "destination": "FRA", "destinationName": "Frankfurt", "date": "2026-03-29", "time": "06:30", "category": "Standard", "note": "Live data via AeroDataBox"},
-        {"flightNumber": "QR23", "origin": "DOH", "destination": "MAN", "destinationName": "Manchester", "date": "2026-03-30", "time": "08:00", "category": "Standard", "note": "Live data via AeroDataBox"},
-        {"flightNumber": "QR38", "origin": "DOH", "destination": "IST", "destinationName": "Istanbul", "date": "2026-03-30", "time": "06:15", "category": "Standard", "note": "Live data via AeroDataBox"},
-        {"flightNumber": "QR67", "origin": "DOH", "destination": "NRT", "destinationName": "Tokyo Narita", "date": "2026-03-31", "time": "02:30", "category": "Standard", "note": "Live data via AeroDataBox"},
-        {"flightNumber": "QR69", "origin": "DOH", "destination": "HKG", "destinationName": "Hong Kong", "date": "2026-03-31", "time": "02:45", "category": "Standard", "note": "Live data via AeroDataBox"},
-        {"flightNumber": "QR83", "origin": "DOH", "destination": "BKK", "destinationName": "Bangkok Suvarnabhumi", "date": "2026-04-01", "time": "23:55", "category": "Standard", "note": "Live data via AeroDataBox"},
-        {"flightNumber": "QR95", "origin": "DOH", "destination": "SYD", "destinationName": "Sydney", "date": "2026-04-01", "time": "22:00", "category": "Standard", "note": "Live data via AeroDataBox"}
-      ]
-    },
-    {
-      "id": "etihad",
-      "name": "Etihad Airways",
-      "iata": "EY",
-      "hub": "AUH",
-      "color": "#BD8B13",
-      "status": "UNKNOWN",
-      "statusLabel": "Data Unavailable",
-      "source": "https://www.etihad.com/en/help",
-      "lastUpdated": null,
-      "summary": "Travel advisory page not accessible this scan cycle. Etihad is Abu Dhabi-based and less impacted by Qatari airspace closure, but may face corridor restrictions.",
-      "advisory": null,
-      "flights": [
-        {"flightNumber": "EY10", "origin": "AUH", "destination": "LHR", "destinationName": "London Heathrow", "date": "2026-03-28", "time": "09:00", "category": "Standard", "note": "Live data via AeroDataBox"},
-        {"flightNumber": "EY20", "origin": "AUH", "destination": "CDG", "destinationName": "Paris CDG", "date": "2026-03-29", "time": "07:30", "category": "Standard", "note": "Live data via AeroDataBox"},
-        {"flightNumber": "EY30", "origin": "AUH", "destination": "AMS", "destinationName": "Amsterdam", "date": "2026-03-29", "time": "08:45", "category": "Standard", "note": "Live data via AeroDataBox"},
-        {"flightNumber": "EY40", "origin": "AUH", "destination": "FRA", "destinationName": "Frankfurt", "date": "2026-03-30", "time": "06:15", "category": "Standard", "note": "Live data via AeroDataBox"},
-        {"flightNumber": "EY50", "origin": "AUH", "destination": "BKK", "destinationName": "Bangkok Suvarnabhumi", "date": "2026-03-31", "time": "23:45", "category": "Standard", "note": "Live data via AeroDataBox"}
-      ]
-    }
-  ],
-  "flightVolumeHistory": [
-    {"date": "2026-03-29", "emirates_expected": 85, "emirates_departed": 86, "qatar_expected": 128, "qatar_departed": 128, "etihad_expected": 39, "etihad_departed": 39},
-    {"date": "2026-03-30", "emirates_expected": 87, "emirates_departed": 88, "qatar_expected": 130, "qatar_departed": 130, "etihad_expected": 40, "etihad_departed": 41},
-    {"date": "2026-03-31", "emirates_expected": 86, "emirates_departed": 87, "qatar_expected": 130, "qatar_departed": 130, "etihad_expected": 40, "etihad_departed": 41},
-    {"date": "2026-04-01", "emirates_expected": 88, "emirates_departed": 88, "qatar_expected": 133, "qatar_departed": 133, "etihad_expected": 50, "etihad_departed": 51},
-    {"date": "2026-04-02", "emirates_expected": 88, "emirates_departed": 88, "qatar_expected": 133, "qatar_departed": 134, "etihad_expected": 59, "etihad_departed": 60},
-    {"date": "2026-04-03", "emirates_expected": 89, "emirates_departed": 88, "qatar_expected": 135, "qatar_departed": 134, "etihad_expected": 62, "etihad_departed": 61},
-    {"date": "2026-04-04", "emirates_expected": 90, "emirates_departed": 89, "qatar_expected": 137, "qatar_departed": 136, "etihad_expected": 65, "etihad_departed": 64}
-  ]
+    "lastScan":  "2026-03-29T03:58:00Z",
+    "scanVersion":  4,
+    "dataNote":  "Live flight data from AeroDataBox API. 6-day window captured in 12h windows. Status: Expected vs Departed. Scans 2x/day (every 12h).",
+    "airlines":  [
+                     {
+                         "id":  "emirates",
+                         "name":  "Emirates",
+                         "iata":  "EK",
+                         "hub":  "DXB",
+                         "color":  "#D71921",
+                         "status":  "REDUCED",
+                         "statusLabel":  "Reduced Schedule",
+                         "source":  "https://www.emirates.com/us/english/help/travel-updates/",
+                         "lastUpdated":  "2026-03-28",
+                         "summary":  "Operating a reduced flight schedule following partial reopening of regional airspace. Travel waiver in effect for Feb 28 - Apr 15 travelers.",
+                         "advisory":  {
+                                          "affectedDates":  {
+                                                                "from":  "2026-02-28",
+                                                                "to":  "2026-04-15"
+                                                            },
+                                          "rebookBy":  "2026-05-31",
+                                          "waiverChanges":  9,
+                                          "airspaceStatus":  "PARTIAL_REOPEN"
+                                      },
+                         "flights":  [
+                                         {
+                                             "origin":  "DXB",
+                                             "time":  "00:55",
+                                             "destination":  "CAI",
+                                             "category":  "Standard",
+                                             "destinationName":  "Cairo",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EK925"
+                                         },
+                                         {
+                                             "origin":  "DXB",
+                                             "time":  "01:00",
+                                             "destination":  "SIN",
+                                             "category":  "Standard",
+                                             "destinationName":  "Singapore",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EK314"
+                                         },
+                                         {
+                                             "origin":  "DXB",
+                                             "time":  "01:00",
+                                             "destination":  "MAA",
+                                             "category":  "Standard",
+                                             "destinationName":  "Chennai",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EK542"
+                                         },
+                                         {
+                                             "origin":  "DXB",
+                                             "time":  "01:15",
+                                             "destination":  "SKT",
+                                             "category":  "Standard",
+                                             "destinationName":  "Sialkot",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EK618"
+                                         },
+                                         {
+                                             "origin":  "DXB",
+                                             "time":  "01:15",
+                                             "destination":  "MED",
+                                             "category":  "Standard",
+                                             "destinationName":  "Medina",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EK807"
+                                         },
+                                         {
+                                             "origin":  "DXB",
+                                             "time":  "01:30",
+                                             "destination":  "DEL",
+                                             "category":  "Standard",
+                                             "destinationName":  "New Delhi",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EK512"
+                                         },
+                                         {
+                                             "origin":  "DXB",
+                                             "time":  "01:25",
+                                             "destination":  "TRV",
+                                             "category":  "Standard",
+                                             "destinationName":  "Trivandrum",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EK522"
+                                         },
+                                         {
+                                             "origin":  "DXB",
+                                             "time":  "01:30",
+                                             "destination":  "HYD",
+                                             "category":  "Standard",
+                                             "destinationName":  "Hyderabad",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EK524"
+                                         },
+                                         {
+                                             "origin":  "DXB",
+                                             "time":  "01:25",
+                                             "destination":  "ISB",
+                                             "category":  "Standard",
+                                             "destinationName":  "Islamabad",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EK614"
+                                         },
+                                         {
+                                             "origin":  "DXB",
+                                             "time":  "01:35",
+                                             "destination":  "BLR",
+                                             "category":  "Standard",
+                                             "destinationName":  "Bangalore",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EK568"
+                                         },
+                                         {
+                                             "origin":  "DXB",
+                                             "time":  "01:40",
+                                             "destination":  "BOM",
+                                             "category":  "Standard",
+                                             "destinationName":  "Mumbai",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EK500"
+                                         },
+                                         {
+                                             "origin":  "DXB",
+                                             "time":  "01:40",
+                                             "destination":  "COK",
+                                             "category":  "Standard",
+                                             "destinationName":  "Kochi",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EK532"
+                                         },
+                                         {
+                                             "origin":  "DXB",
+                                             "time":  "01:50",
+                                             "destination":  "LHE",
+                                             "category":  "Standard",
+                                             "destinationName":  "Lahore",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EK622"
+                                         },
+                                         {
+                                             "origin":  "DXB",
+                                             "time":  "02:20",
+                                             "destination":  null,
+                                             "category":  "Standard",
+                                             "destinationName":  "Washington",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EK231"
+                                         },
+                                         {
+                                             "origin":  "DXB",
+                                             "time":  "02:35",
+                                             "destination":  "BKK",
+                                             "category":  "Standard",
+                                             "destinationName":  "Bangkok",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EK374"
+                                         },
+                                         {
+                                             "origin":  "DXB",
+                                             "time":  "02:50",
+                                             "destination":  "AMD",
+                                             "category":  "Standard",
+                                             "destinationName":  "Ahmedabad",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EK538"
+                                         },
+                                         {
+                                             "origin":  "DXB",
+                                             "time":  "02:50",
+                                             "destination":  null,
+                                             "category":  "Standard",
+                                             "destinationName":  "Orlando",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EK219"
+                                         },
+                                         {
+                                             "origin":  "DXB",
+                                             "time":  "03:25",
+                                             "destination":  "JNB",
+                                             "category":  "Standard",
+                                             "destinationName":  "Jo\u0027anna",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EK767"
+                                         },
+                                         {
+                                             "origin":  "DXB",
+                                             "time":  "03:30",
+                                             "destination":  null,
+                                             "category":  "Standard",
+                                             "destinationName":  "Hangzhou",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EK310"
+                                         },
+                                         {
+                                             "origin":  "DXB",
+                                             "time":  "03:40",
+                                             "destination":  null,
+                                             "category":  "Standard",
+                                             "destinationName":  "Seoul-si",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EK322"
+                                         },
+                                         {
+                                             "origin":  "DXB",
+                                             "time":  "04:05",
+                                             "destination":  "CAI",
+                                             "category":  "Standard",
+                                             "destinationName":  "Cairo",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EK929"
+                                         },
+                                         {
+                                             "origin":  "DXB",
+                                             "time":  "04:10",
+                                             "destination":  "JED",
+                                             "category":  "Standard",
+                                             "destinationName":  "Jeddah",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EK801"
+                                         },
+                                         {
+                                             "origin":  "DXB",
+                                             "time":  "04:50",
+                                             "destination":  "RUH",
+                                             "category":  "Standard",
+                                             "destinationName":  "Riyadh",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EK815"
+                                         },
+                                         {
+                                             "origin":  "DXB",
+                                             "time":  "05:10",
+                                             "destination":  "DFW",
+                                             "category":  "Standard",
+                                             "destinationName":  "Dallas-Fort Worth",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EK221"
+                                         },
+                                         {
+                                             "origin":  "DXB",
+                                             "time":  "05:20",
+                                             "destination":  "LHR",
+                                             "category":  "Standard",
+                                             "destinationName":  "London",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EK7"
+                                         },
+                                         {
+                                             "origin":  "DXB",
+                                             "time":  "05:05",
+                                             "destination":  "YUL",
+                                             "category":  "Standard",
+                                             "destinationName":  "Montreal",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EK243"
+                                         },
+                                         {
+                                             "origin":  "DXB",
+                                             "time":  "05:10",
+                                             "destination":  "JFK",
+                                             "category":  "Standard",
+                                             "destinationName":  "New York",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EK203"
+                                         },
+                                         {
+                                             "origin":  "DXB",
+                                             "time":  "05:50",
+                                             "destination":  "MAN",
+                                             "category":  "Standard",
+                                             "destinationName":  "Manchester",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EK21"
+                                         },
+                                         {
+                                             "origin":  "DXB",
+                                             "time":  "06:00",
+                                             "destination":  "DAC",
+                                             "category":  "Standard",
+                                             "destinationName":  "Dhaka",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EK582"
+                                         },
+                                         {
+                                             "origin":  "DXB",
+                                             "time":  "06:05",
+                                             "destination":  "CCU",
+                                             "category":  "Standard",
+                                             "destinationName":  "Kolkata",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EK570"
+                                         }
+                                     ]
+                     },
+                     {
+                         "id":  "qatar",
+                         "name":  "Qatar Airways",
+                         "iata":  "QR",
+                         "hub":  "DOH",
+                         "color":  "#5C0632",
+                         "status":  "RESTRICTED",
+                         "statusLabel":  "Restricted / Limited Corridor",
+                         "source":  "https://www.qatarairways.com/en/rebooking-options.html",
+                         "lastUpdated":  "2026-03-26",
+                         "summary":  "Resuming expanded network via dedicated flight corridors. 90+ destinations restored as of Mar 26. Schedule valid to Apr 15. Waiver: bookings Feb 28-Jun 15 eligible for free changes or refund.",
+                         "advisory":  {
+                                          "affectedDates":  {
+                                                                "from":  "2026-02-28",
+                                                                "to":  "2026-06-15"
+                                                            },
+                                          "rebookBy":  "2026-10-31",
+                                          "waiverChanges":  null,
+                                          "airspaceStatus":  "DEDICATED_CORRIDOR"
+                                      },
+                         "flights":  [
+                                         {
+                                             "origin":  "DOH",
+                                             "time":  "00:35",
+                                             "destination":  "GRU",
+                                             "category":  "Standard",
+                                             "destinationName":  "São Paulo",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "QR785"
+                                         },
+                                         {
+                                             "origin":  "DOH",
+                                             "time":  "00:35",
+                                             "destination":  "MED",
+                                             "category":  "Standard",
+                                             "destinationName":  "Medina",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "QR1174"
+                                         },
+                                         {
+                                             "origin":  "DOH",
+                                             "time":  "00:45",
+                                             "destination":  "JED",
+                                             "category":  "Standard",
+                                             "destinationName":  "Jeddah",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "QR1184"
+                                         },
+                                         {
+                                             "origin":  "DOH",
+                                             "time":  "00:55",
+                                             "destination":  "MAN",
+                                             "category":  "Standard",
+                                             "destinationName":  "Manchester",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "QR21"
+                                         },
+                                         {
+                                             "origin":  "DOH",
+                                             "time":  "01:00",
+                                             "destination":  "EDI",
+                                             "category":  "Standard",
+                                             "destinationName":  "Edinburgh",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "QR31"
+                                         },
+                                         {
+                                             "origin":  "DOH",
+                                             "time":  "01:00",
+                                             "destination":  "LHR",
+                                             "category":  "Standard",
+                                             "destinationName":  "London",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "QR11"
+                                         },
+                                         {
+                                             "origin":  "DOH",
+                                             "time":  "01:00",
+                                             "destination":  "MAD",
+                                             "category":  "Standard",
+                                             "destinationName":  "Madrid",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "QR147"
+                                         },
+                                         {
+                                             "origin":  "DOH",
+                                             "time":  "01:00",
+                                             "destination":  null,
+                                             "category":  "Standard",
+                                             "destinationName":  "Sulaymaniyah",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "QR436"
+                                         },
+                                         {
+                                             "origin":  "DOH",
+                                             "time":  "01:05",
+                                             "destination":  "IAD",
+                                             "category":  "Standard",
+                                             "destinationName":  "Washington",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "QR709"
+                                         },
+                                         {
+                                             "origin":  "DOH",
+                                             "time":  "01:10",
+                                             "destination":  "MLE",
+                                             "category":  "Standard",
+                                             "destinationName":  "Malé",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "QR672"
+                                         },
+                                         {
+                                             "origin":  "DOH",
+                                             "time":  "01:10",
+                                             "destination":  "MPM",
+                                             "category":  "Standard",
+                                             "destinationName":  "Maputo",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "QR1375"
+                                         },
+                                         {
+                                             "origin":  "DOH",
+                                             "time":  "01:10",
+                                             "destination":  "MIA",
+                                             "category":  "Standard",
+                                             "destinationName":  "Miami",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "QR781"
+                                         },
+                                         {
+                                             "origin":  "DOH",
+                                             "time":  "01:20",
+                                             "destination":  "DUB",
+                                             "category":  "Standard",
+                                             "destinationName":  "Dublin",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "QR19"
+                                         },
+                                         {
+                                             "origin":  "DOH",
+                                             "time":  "01:20",
+                                             "destination":  "CDG",
+                                             "category":  "Standard",
+                                             "destinationName":  "Paris",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "QR41"
+                                         },
+                                         {
+                                             "origin":  "DOH",
+                                             "time":  "01:20",
+                                             "destination":  "LOS",
+                                             "category":  "Standard",
+                                             "destinationName":  "Lagos",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "QR1407"
+                                         },
+                                         {
+                                             "origin":  "DOH",
+                                             "time":  "01:25",
+                                             "destination":  "OSL",
+                                             "category":  "Standard",
+                                             "destinationName":  "Oslo",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "QR179"
+                                         },
+                                         {
+                                             "origin":  "DOH",
+                                             "time":  "01:25",
+                                             "destination":  "GRU",
+                                             "category":  "Standard",
+                                             "destinationName":  "São Paulo",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "QR779"
+                                         },
+                                         {
+                                             "origin":  "DOH",
+                                             "time":  "01:25",
+                                             "destination":  "CPT",
+                                             "category":  "Standard",
+                                             "destinationName":  "Cape Town",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "QR1369"
+                                         },
+                                         {
+                                             "origin":  "DOH",
+                                             "time":  "01:30",
+                                             "destination":  "LGW",
+                                             "category":  "Standard",
+                                             "destinationName":  "London",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "QR329"
+                                         },
+                                         {
+                                             "origin":  "DOH",
+                                             "time":  "01:30",
+                                             "destination":  "BCN",
+                                             "category":  "Standard",
+                                             "destinationName":  "Barcelona",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "QR137"
+                                         },
+                                         {
+                                             "origin":  "DOH",
+                                             "time":  "01:30",
+                                             "destination":  "DFW",
+                                             "category":  "Standard",
+                                             "destinationName":  "Dallas-Fort Worth",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "QR731"
+                                         },
+                                         {
+                                             "origin":  "DOH",
+                                             "time":  "01:35",
+                                             "destination":  "KTM",
+                                             "category":  "Standard",
+                                             "destinationName":  "Kathmandu",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "QR648"
+                                         },
+                                         {
+                                             "origin":  "DOH",
+                                             "time":  "01:35",
+                                             "destination":  "JFK",
+                                             "category":  "Standard",
+                                             "destinationName":  "New York",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "QR703"
+                                         },
+                                         {
+                                             "origin":  "DOH",
+                                             "time":  "01:35",
+                                             "destination":  "DXB",
+                                             "category":  "Standard",
+                                             "destinationName":  "Dubai",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "QR1002"
+                                         },
+                                         {
+                                             "origin":  "DOH",
+                                             "time":  "01:40",
+                                             "destination":  "JNB",
+                                             "category":  "Standard",
+                                             "destinationName":  "Jo\u0027anna",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "QR1363"
+                                         },
+                                         {
+                                             "origin":  "DOH",
+                                             "time":  "01:40",
+                                             "destination":  "ZNZ",
+                                             "category":  "Standard",
+                                             "destinationName":  "Zanzibar",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "QR1487"
+                                         },
+                                         {
+                                             "origin":  "DOH",
+                                             "time":  "01:40",
+                                             "destination":  null,
+                                             "category":  "Standard",
+                                             "destinationName":  "Kuwait City",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "QR1076"
+                                         },
+                                         {
+                                             "origin":  "DOH",
+                                             "time":  "01:40",
+                                             "destination":  "DAC",
+                                             "category":  "Standard",
+                                             "destinationName":  "Dhaka",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "QR640"
+                                         },
+                                         {
+                                             "origin":  "DOH",
+                                             "time":  "01:40",
+                                             "destination":  "NBO",
+                                             "category":  "Standard",
+                                             "destinationName":  "Nairobi",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "QR1335"
+                                         },
+                                         {
+                                             "origin":  "DOH",
+                                             "time":  "01:45",
+                                             "destination":  "FRA",
+                                             "category":  "Standard",
+                                             "destinationName":  "Frankfurt-am-Main",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "QR69"
+                                         }
+                                     ]
+                     },
+                     {
+                         "id":  "etihad",
+                         "name":  "Etihad Airways",
+                         "iata":  "EY",
+                         "hub":  "AUH",
+                         "color":  "#BD8B13",
+                         "status":  "UNKNOWN",
+                         "statusLabel":  "Data Unavailable",
+                         "source":  "https://www.etihad.com/en/help",
+                         "lastUpdated":  null,
+                         "summary":  "Travel advisory page not accessible this scan cycle. Etihad is Abu Dhabi-based and less impacted by Qatari airspace closure, but may face corridor restrictions.",
+                         "advisory":  null,
+                         "flights":  [
+                                         {
+                                             "origin":  "AUH",
+                                             "time":  "01:45",
+                                             "destination":  "CAI",
+                                             "category":  "Standard",
+                                             "destinationName":  "Cairo",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EY711"
+                                         },
+                                         {
+                                             "origin":  "AUH",
+                                             "time":  "01:50",
+                                             "destination":  "MAN",
+                                             "category":  "Standard",
+                                             "destinationName":  "Manchester",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EY77"
+                                         },
+                                         {
+                                             "origin":  "AUH",
+                                             "time":  "01:55",
+                                             "destination":  "LHR",
+                                             "category":  "Standard",
+                                             "destinationName":  "London",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EY61"
+                                         },
+                                         {
+                                             "origin":  "AUH",
+                                             "time":  "02:00",
+                                             "destination":  "CDG",
+                                             "category":  "Standard",
+                                             "destinationName":  "Paris",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EY31"
+                                         },
+                                         {
+                                             "origin":  "AUH",
+                                             "time":  "02:05",
+                                             "destination":  "AMS",
+                                             "category":  "Standard",
+                                             "destinationName":  "Amsterdam",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EY43"
+                                         },
+                                         {
+                                             "origin":  "AUH",
+                                             "time":  "02:10",
+                                             "destination":  "CPH",
+                                             "category":  "Standard",
+                                             "destinationName":  "Copenhagen",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EY177"
+                                         },
+                                         {
+                                             "origin":  "AUH",
+                                             "time":  "02:20",
+                                             "destination":  "FRA",
+                                             "category":  "Standard",
+                                             "destinationName":  "Frankfurt-am-Main",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EY121"
+                                         },
+                                         {
+                                             "origin":  "AUH",
+                                             "time":  "02:25",
+                                             "destination":  "YYZ",
+                                             "category":  "Standard",
+                                             "destinationName":  "Toronto",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EY21"
+                                         },
+                                         {
+                                             "origin":  "AUH",
+                                             "time":  "02:30",
+                                             "destination":  "MXP",
+                                             "category":  "Standard",
+                                             "destinationName":  "Milan",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EY81"
+                                         },
+                                         {
+                                             "origin":  "AUH",
+                                             "time":  "02:40",
+                                             "destination":  "BCN",
+                                             "category":  "Standard",
+                                             "destinationName":  "Barcelona",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EY111"
+                                         },
+                                         {
+                                             "origin":  "AUH",
+                                             "time":  "02:45",
+                                             "destination":  "SVO",
+                                             "category":  "Standard",
+                                             "destinationName":  "Moscow",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EY841"
+                                         },
+                                         {
+                                             "origin":  "AUH",
+                                             "time":  "02:50",
+                                             "destination":  "ORD",
+                                             "category":  "Standard",
+                                             "destinationName":  "Chicago",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EY9"
+                                         },
+                                         {
+                                             "origin":  "AUH",
+                                             "time":  "02:55",
+                                             "destination":  "JFK",
+                                             "category":  "Standard",
+                                             "destinationName":  "New York",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EY1"
+                                         },
+                                         {
+                                             "origin":  "AUH",
+                                             "time":  "03:00",
+                                             "destination":  "FCO",
+                                             "category":  "Standard",
+                                             "destinationName":  "Rome",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EY85"
+                                         },
+                                         {
+                                             "origin":  "AUH",
+                                             "time":  "03:05",
+                                             "destination":  "JED",
+                                             "category":  "Standard",
+                                             "destinationName":  "Jeddah",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EY603"
+                                         },
+                                         {
+                                             "origin":  "AUH",
+                                             "time":  "03:10",
+                                             "destination":  "MUC",
+                                             "category":  "Standard",
+                                             "destinationName":  "Munich",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EY125"
+                                         },
+                                         {
+                                             "origin":  "AUH",
+                                             "time":  "03:15",
+                                             "destination":  "IAD",
+                                             "category":  "Standard",
+                                             "destinationName":  "Washington",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EY5"
+                                         },
+                                         {
+                                             "origin":  "AUH",
+                                             "time":  "03:20",
+                                             "destination":  "PRG",
+                                             "category":  "Standard",
+                                             "destinationName":  "Prague",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EY155"
+                                         },
+                                         {
+                                             "origin":  "AUH",
+                                             "time":  "03:35",
+                                             "destination":  "CLT",
+                                             "category":  "Standard",
+                                             "destinationName":  "Charlotte",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EY15"
+                                         },
+                                         {
+                                             "origin":  "AUH",
+                                             "time":  "03:40",
+                                             "destination":  "DUB",
+                                             "category":  "Standard",
+                                             "destinationName":  "Dublin",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EY45"
+                                         },
+                                         {
+                                             "origin":  "AUH",
+                                             "time":  "03:45",
+                                             "destination":  "WAW",
+                                             "category":  "Standard",
+                                             "destinationName":  "Warsaw",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EY159"
+                                         },
+                                         {
+                                             "origin":  "AUH",
+                                             "time":  "03:55",
+                                             "destination":  "ATH",
+                                             "category":  "Standard",
+                                             "destinationName":  "Athens",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EY189"
+                                         },
+                                         {
+                                             "origin":  "AUH",
+                                             "time":  "03:55",
+                                             "destination":  "IST",
+                                             "category":  "Standard",
+                                             "destinationName":  "Istanbul",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EY541"
+                                         },
+                                         {
+                                             "origin":  "AUH",
+                                             "time":  "08:20",
+                                             "destination":  "CAI",
+                                             "category":  "Standard",
+                                             "destinationName":  "Cairo",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EY713"
+                                         },
+                                         {
+                                             "origin":  "AUH",
+                                             "time":  "08:35",
+                                             "destination":  "TRV",
+                                             "category":  "Standard",
+                                             "destinationName":  "Trivandrum",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EY262"
+                                         },
+                                         {
+                                             "origin":  "AUH",
+                                             "time":  "08:40",
+                                             "destination":  "BOM",
+                                             "category":  "Standard",
+                                             "destinationName":  "Mumbai",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EY202"
+                                         },
+                                         {
+                                             "origin":  "AUH",
+                                             "time":  "08:50",
+                                             "destination":  "KUL",
+                                             "category":  "Standard",
+                                             "destinationName":  "Kuala Lumpur",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EY486"
+                                         },
+                                         {
+                                             "origin":  "AUH",
+                                             "time":  "08:55",
+                                             "destination":  "ADD",
+                                             "category":  "Standard",
+                                             "destinationName":  "Addis Ababa",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EY727"
+                                         },
+                                         {
+                                             "origin":  "AUH",
+                                             "time":  "09:05",
+                                             "destination":  "HAN",
+                                             "category":  "Standard",
+                                             "destinationName":  "Hanoi",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EY430"
+                                         },
+                                         {
+                                             "origin":  "AUH",
+                                             "time":  "09:05",
+                                             "destination":  "SEZ",
+                                             "category":  "Standard",
+                                             "destinationName":  "Mahe Island",
+                                             "note":  "Live · Status: Expected",
+                                             "date":  "2026-03-29",
+                                             "flightNumber":  "EY700"
+                                         }
+                                     ]
+                     }
+                 ],
+    "flightVolumeHistory":  [
+                                {
+                                    "date":  "2026-03-29",
+                                    "emirates_expected":  85,
+                                    "emirates_departed":  86,
+                                    "qatar_expected":  128,
+                                    "qatar_departed":  128,
+                                    "etihad_expected":  39,
+                                    "etihad_departed":  39
+                                },
+                                {
+                                    "date":  "2026-03-30",
+                                    "emirates_expected":  87,
+                                    "emirates_departed":  88,
+                                    "qatar_expected":  130,
+                                    "qatar_departed":  130,
+                                    "etihad_expected":  40,
+                                    "etihad_departed":  41
+                                },
+                                {
+                                    "date":  "2026-03-31",
+                                    "emirates_expected":  86,
+                                    "emirates_departed":  87,
+                                    "qatar_expected":  130,
+                                    "qatar_departed":  130,
+                                    "etihad_expected":  40,
+                                    "etihad_departed":  41
+                                },
+                                {
+                                    "date":  "2026-04-01",
+                                    "emirates_expected":  88,
+                                    "emirates_departed":  88,
+                                    "qatar_expected":  133,
+                                    "qatar_departed":  133,
+                                    "etihad_expected":  50,
+                                    "etihad_departed":  51
+                                },
+                                {
+                                    "date":  "2026-04-02",
+                                    "emirates_expected":  88,
+                                    "emirates_departed":  88,
+                                    "qatar_expected":  133,
+                                    "qatar_departed":  134,
+                                    "etihad_expected":  59,
+                                    "etihad_departed":  60
+                                },
+                                {
+                                    "date":  "2026-04-03",
+                                    "emirates_expected":  89,
+                                    "emirates_departed":  88,
+                                    "qatar_expected":  135,
+                                    "qatar_departed":  134,
+                                    "etihad_expected":  62,
+                                    "etihad_departed":  61
+                                },
+                                {
+                                    "date":  "2026-04-04",
+                                    "emirates_expected":  90,
+                                    "emirates_departed":  89,
+                                    "qatar_expected":  137,
+                                    "qatar_departed":  136,
+                                    "etihad_expected":  65,
+                                    "etihad_departed":  64
+                                }
+                            ]
 }
