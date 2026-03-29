@@ -150,7 +150,9 @@ $json = @"
 }
 "@
 
-[System.IO.File]::WriteAllText("$RepoPath\data\scan_results.json", $json, [System.Text.Encoding]::UTF8)
+# Ensure UTF-8 without BOM
+$utf8 = New-Object System.Text.UTF8Encoding $false
+[System.IO.File]::WriteAllText("$RepoPath\data\scan_results.json", $json, $utf8)
 Write-Host "`nDone - 6-day scan with status tracking"
 
 # Git push

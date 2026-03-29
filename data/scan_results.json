@@ -1,4 +1,4 @@
-﻿{
+{
     "lastScan":  "2026-03-29T04:12:20Z",
     "scanVersion":  4,
     "dataNote":  "Live flight data from AeroDataBox API. 6-day window (today through day 5) captured in 12 × 12h windows. Status: Expected vs Departed. Scans every 12h (2x/day).",
