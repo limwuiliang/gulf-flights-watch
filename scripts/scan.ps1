@@ -1,7 +1,7 @@
-# Gulf Flights Watch — AeroDataBox scan script (2x daily)
-# Captures 6-day window with flight status (Expected/Departed)
-# 12 windows × 3 airports = 36 API calls per scan (~36 units)
-# 2 scans/day = ~72 units/day, well within 600/month free tier
+# Gulf Flights Watch — AeroDataBox scan script (1x daily, incremental)
+# Incremental scans: only today + new forecast dates queried (not old dates)
+# Typical: 6-8 API calls per scan (today + 1 new date)
+# 1 scan/day = ~6-8 units/day, well within 600/month budget (~180-240/month)
 
 param(
   [string]$RapidApiKey  = "YOUR_RAPIDAPI_KEY_HERE",
@@ -16,16 +16,52 @@ $hdrs = @{ "x-rapidapi-host" = $rapidHost; "x-rapidapi-key" = $RapidApiKey }
 
 $now = [System.DateTime]::UtcNow.AddHours(4)
 
-# Build 6 days of 12h windows (12 total)
-$windows = @()
-for ($i = 0; $i -lt 6; $i++) {
-  $dayStart = $now.Date.AddDays($i).ToString("yyyy-MM-ddT00:00")
-  $dayMid   = $now.Date.AddDays($i).AddHours(12).ToString("yyyy-MM-ddT12:00")
-  $windows += @{ s=$dayStart; e=$dayMid }
-  $windows += @{ s=$dayMid; e=$now.Date.AddDays($i+1).ToString("yyyy-MM-ddT00:00") }
+# Anchor date: Mar 29, 2026
+$anchorDate = [System.DateTime]::Parse("2026-03-29")
+$todayDate = $now.Date
+$tomorrowDate = $todayDate.AddDays(1)
+$lastForecastDate = $todayDate.AddDays(6)
+
+# Load existing history to see what dates we already have
+$existingHistory = @()
+$existingByDate = @{}
+if (Test-Path "$RepoPath\data\scan_results.json") {
+  try {
+    $existing = Get-Content "$RepoPath\data\scan_results.json" -Raw -Encoding UTF8 | ConvertFrom-Json
+    $existingHistory = $existing.flightVolumeHistory
+    foreach ($entry in $existingHistory) {
+      $existingByDate[$entry.date] = $entry
+    }
+    Write-Host "Loaded existing history with $($existingByDate.Count) dates"
+  } catch {
+    Write-Host "Could not load existing history, will scan full range"
+  }
 }
 
-Write-Host "Scanning 6 days: $($now.Date.ToString('yyyy-MM-dd')) to $(($now.Date.AddDays(5)).ToString('yyyy-MM-dd')) (12 windows × 3 airports = 36 API calls)"
+# Determine which dates to scan:
+# - Always scan today (to get updated Departed counts)
+# - Scan any dates in the rolling window (today through today+6) that we don't have yet
+$datesToScan = @()
+$datesToScan += $todayDate  # Always update today's departures
+
+# Add any new dates in the rolling forecast window that aren't in history yet
+for ($i = 1; $i -le 6; $i++) {
+  $d = $todayDate.AddDays($i)
+  if (-not $existingByDate[$d.ToString("yyyy-MM-dd")]) {
+    $datesToScan += $d
+  }
+}
+
+# Build windows only for dates we need to scan
+$windows = @()
+foreach ($d in $datesToScan) {
+  $dayStart = $d.ToString("yyyy-MM-ddT00:00")
+  $dayMid   = $d.AddHours(12).ToString("yyyy-MM-ddT12:00")
+  $windows += @{ s=$dayStart; e=$dayMid; date=$d.ToString("yyyy-MM-dd") }
+  $windows += @{ s=$dayMid; e=$d.AddDays(1).ToString("yyyy-MM-ddT00:00"); date=$d.ToString("yyyy-MM-dd") }
+}
+
+Write-Host "Scanning only new dates: $($datesToScan -join ', ') ($($windows.Count) windows × 3 airports = $($windows.Count * 3) API calls)"
 
 $queries = @()
 foreach ($window in $windows) {
@@ -41,49 +77,67 @@ $flightsByDateStatus = @{}  # {date}{status} -> count
 $seenFlights = @{}
 
 foreach ($q in $queries) {
-  Start-Sleep -Seconds 2
+  Start-Sleep -Seconds 5  # Increased from 2s to 5s per call to avoid rate limits
   $url = "https://aerodatabox.p.rapidapi.com/flights/airports/iata/$($q.ap)/$($q.s)/$($q.e)?direction=Departure&withLeg=true&withCancelled=false&withCodeshared=false&withCargo=false&withPrivate=false"
-  try {
-    $r = Invoke-RestMethod -Uri $url -Headers $hdrs -Method Get
-    $filtered = $r.departures | Where-Object { ($_.number -replace '\s','').StartsWith($q.pfx) }
-    foreach ($f in $filtered) {
-      $dep = $f.departure.scheduledTime.local
-      $d = $dep.Substring(0,10)
-      $fn = ($f.number -replace '\s','')
-      $status = $f.status  # "Expected", "Departed", etc.
-      $key = "$fn-$d"
-      
-      if ($seenFlights[$key]) { continue }
-      $seenFlights[$key] = $true
-      
-      # Track by date + status for chart
-      if (-not $flightsByDateStatus[$d]) {
-        $flightsByDateStatus[$d] = @{ 
-          emirates_expected = 0; emirates_departed = 0
-          qatar_expected = 0; qatar_departed = 0
-          etihad_expected = 0; etihad_departed = 0
+  
+  # Retry logic for rate limits
+  $maxRetries = 3
+  $retryCount = 0
+  $success = $false
+  
+  while ($retryCount -lt $maxRetries -and -not $success) {
+    try {
+      $r = Invoke-RestMethod -Uri $url -Headers $hdrs -Method Get
+      $filtered = $r.departures | Where-Object { ($_.number -replace '\s','').StartsWith($q.pfx) }
+      foreach ($f in $filtered) {
+        $dep = $f.departure.scheduledTime.local
+        $d = $dep.Substring(0,10)
+        $fn = ($f.number -replace '\s','')
+        $status = $f.status  # "Expected", "Departed", etc.
+        $key = "$fn-$d"
+        
+        if ($seenFlights[$key]) { continue }
+        $seenFlights[$key] = $true
+        
+        # Track by date + status for chart
+        if (-not $flightsByDateStatus[$d]) {
+          $flightsByDateStatus[$d] = @{ 
+            emirates_expected = 0; emirates_departed = 0
+            qatar_expected = 0; qatar_departed = 0
+            etihad_expected = 0; etihad_departed = 0
+          }
+        }
+        $statusKey = "$($q.id)_$($status.ToLower())"
+        $flightsByDateStatus[$d][$statusKey] += 1
+        
+        # Add to flights array
+        $byAirline[$q.id] += [ordered]@{
+          flightNumber    = $fn
+          origin          = $q.ap
+          transit         = $null
+          destination     = "$($f.arrival.airport.iata)"
+          destinationName = "$($f.arrival.airport.name)"
+          date            = $d
+          time            = $dep.Substring(11,5)
+          status          = $status
+          category        = "Standard"
+          priceUSD        = $null
+          note            = "Live data via AeroDataBox. Status: $status"
         }
       }
-      $statusKey = "$($q.id)_$($status.ToLower())"
-      $flightsByDateStatus[$d][$statusKey] += 1
-      
-      # Add to flights array
-      $byAirline[$q.id] += [ordered]@{
-        flightNumber    = $fn
-        origin          = $q.ap
-        transit         = $null
-        destination     = "$($f.arrival.airport.iata)"
-        destinationName = "$($f.arrival.airport.name)"
-        date            = $d
-        time            = $dep.Substring(11,5)
-        status          = $status
-        category        = "Standard"
-        priceUSD        = $null
-        note            = "Live data via AeroDataBox. Status: $status"
+      $success = $true
+    } catch {
+      $errorMsg = $_.Exception.Message
+      if ($errorMsg -match "429|Too Many Requests") {
+        $retryCount++
+        $waitTime = 30 + ($retryCount * 30)  # 60s, 90s, 120s
+        Write-Host "$($q.ap) $($q.s) rate limited (429). Retry $retryCount/$maxRetries after ${waitTime}s..." -ForegroundColor Yellow
+        Start-Sleep -Seconds $waitTime
+      } else {
+        Write-Host "$($q.ap) $($q.s) error: $errorMsg" -ForegroundColor Yellow
+        $success = $true  # Don't retry on non-429 errors
       }
     }
-  } catch {
-    Write-Host "$($q.ap) $($q.s) error: $($_.Exception.Message)" -ForegroundColor Yellow
   }
 }
 
@@ -95,20 +149,74 @@ if ($byAirline.emirates.Count -eq 1) { $ekJson = "[$ekJson]" }
 if ($byAirline.qatar.Count -eq 1)    { $qrJson = "[$qrJson]" }
 if ($byAirline.etihad.Count -eq 1)   { $eyJson = "[$eyJson]" }
 
-# Build history with Expected + Departed
-$sortedDates = $flightsByDateStatus.Keys | Sort-Object
-Write-Host "`nFlight counts by date (Expected + Departed):"
-$historyLines = @()
-foreach ($d in $sortedDates) {
-  $ek_exp = $flightsByDateStatus[$d].emirates_expected
-  $ek_dep = $flightsByDateStatus[$d].emirates_departed
-  $qr_exp = $flightsByDateStatus[$d].qatar_expected
-  $qr_dep = $flightsByDateStatus[$d].qatar_departed
-  $ey_exp = $flightsByDateStatus[$d].etihad_expected
-  $ey_dep = $flightsByDateStatus[$d].etihad_departed
+# Merge strategy (optimized for incremental scans):
+# - PRESERVE: All existing dates (Scheduled + Departed both frozen)
+# - UPDATE: Only today's Departed counts (refresh with latest flight data)
+# - ADD: Any new forecast dates (today+1 through today+6) with fresh Scheduled counts
+Write-Host "`nMerging history (incremental scan):"
+$mergedHistory = @()
+
+# First, keep all dates before today unchanged
+$sortedDates = $existingByDate.Keys | Sort-Object
+foreach ($oldDate in $sortedDates) {
+  $dateObj = [System.DateTime]::Parse($oldDate)
+  if ($dateObj -lt $todayDate) {
+    # Old date - preserve as-is
+    $mergedHistory += $existingByDate[$oldDate]
+  }
+}
+
+# Now handle today and forward dates
+for ($i = 0; $i -le 6; $i++) {
+  $d = $todayDate.AddDays($i).ToString("yyyy-MM-dd")
+  $dateObj = [System.DateTime]::Parse($d)
   
-  $historyLines += "    { ""date"": ""$d"", ""emirates_expected"": $ek_exp, ""emirates_departed"": $ek_dep, ""qatar_expected"": $qr_exp, ""qatar_departed"": $qr_dep, ""etihad_expected"": $ey_exp, ""etihad_departed"": $ey_dep }"
-  Write-Host "  $d : EK=$($ek_exp+$ek_dep) (exp:$ek_exp dep:$ek_dep) QR=$($qr_exp+$qr_dep) (exp:$qr_exp dep:$qr_dep) EY=$($ey_exp+$ey_dep) (exp:$ey_exp dep:$ey_dep)"
+  if ($dateObj -eq $todayDate) {
+    # Today: Update Departed counts, preserve Scheduled from previous scan
+    $ek_dep = if ($flightsByDateStatus[$d]) { $flightsByDateStatus[$d].emirates_departed } else { 0 }
+    $qr_dep = if ($flightsByDateStatus[$d]) { $flightsByDateStatus[$d].qatar_departed } else { 0 }
+    $ey_dep = if ($flightsByDateStatus[$d]) { $flightsByDateStatus[$d].etihad_departed } else { 0 }
+    
+    $ek_sch = if ($existingByDate[$d]) { $existingByDate[$d].emirates_scheduled } else { 0 }
+    $qr_sch = if ($existingByDate[$d]) { $existingByDate[$d].qatar_scheduled } else { 0 }
+    $ey_sch = if ($existingByDate[$d]) { $existingByDate[$d].etihad_scheduled } else { 0 }
+    
+    $mergedHistory += @{
+      date = $d
+      emirates_scheduled = $ek_sch
+      emirates_departed = $ek_dep
+      qatar_scheduled = $qr_sch
+      qatar_departed = $qr_dep
+      etihad_scheduled = $ey_sch
+      etihad_departed = $ey_dep
+    }
+    Write-Host "  $d : EK=$($ek_sch) sch | $($ek_dep) dep (TODAY-UPDATED) | QR=$($qr_sch) sch | $($qr_dep) dep | EY=$($ey_sch) sch | $($ey_dep) dep"
+  } elseif ($existingByDate[$d]) {
+    # Future date that exists in history - preserve unchanged
+    $mergedHistory += $existingByDate[$d]
+  } else {
+    # New future date - use data from fresh API scan (Scheduled from new scan, Departed=0)
+    $ek_sch = if ($flightsByDateStatus[$d]) { $flightsByDateStatus[$d].emirates_expected } else { 0 }
+    $qr_sch = if ($flightsByDateStatus[$d]) { $flightsByDateStatus[$d].qatar_expected } else { 0 }
+    $ey_sch = if ($flightsByDateStatus[$d]) { $flightsByDateStatus[$d].etihad_expected } else { 0 }
+    
+    $mergedHistory += @{
+      date = $d
+      emirates_scheduled = $ek_sch
+      emirates_departed = 0
+      qatar_scheduled = $qr_sch
+      qatar_departed = 0
+      etihad_scheduled = $ey_sch
+      etihad_departed = 0
+    }
+    Write-Host "  $d : EK=$($ek_sch) sch | 0 dep (NEW) | QR=$($qr_sch) sch | 0 dep | EY=$($ey_sch) sch | 0 dep"
+  }
+}
+
+# Build JSON array from merged history
+$historyLines = @()
+foreach ($entry in $mergedHistory) {
+  $historyLines += "    { ""date"": ""$($entry.date)"", ""emirates_scheduled"": $($entry.emirates_scheduled), ""emirates_departed"": $($entry.emirates_departed), ""qatar_scheduled"": $($entry.qatar_scheduled), ""qatar_departed"": $($entry.qatar_departed), ""etihad_scheduled"": $($entry.etihad_scheduled), ""etihad_departed"": $($entry.etihad_departed) }"
 }
 $historyArray = "[`n" + ($historyLines -join ",`n") + "`n  ]"
 
@@ -116,7 +224,7 @@ $json = @"
 {
   "lastScan": "$timestamp",
   "scanVersion": 4,
-  "dataNote": "Live flight data from AeroDataBox API. 6-day window (today through day 5) captured in 12 × 12h windows. Status: Expected vs Departed. Scans every 12h (2x/day).",
+  "dataNote": "Live flight data from AeroDataBox API. Incremental scans: only today + new forecast dates queried. Old dates frozen (no re-queries). Today: Departed updated, Scheduled preserved. New dates: Scheduled from fresh API, Departed=0. Scans every 12h (2x/day). Minimal API cost (~6-8 calls/scan).",
   "airlines": [
     {
       "id": "emirates", "name": "Emirates", "iata": "EK", "hub": "DXB",
