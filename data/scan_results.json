@@ -1,7 +1,7 @@
 {
-  "lastScan": "2026-03-29T22:49:14Z",
+  "lastScan": "2026-03-29T22:57:04Z",
   "scanVersion": 4,
-  "dataNote": "Live flight data from AeroDataBox API. Anchored from Mar 29 onwards, expanding daily (today+6 days). Scheduled: preserved from first scan (total capacity). Departed: updated per scan (actual flights). Scans every 12h (2x/day).",
+  "dataNote": "Live flight data from AeroDataBox API. Incremental scans: only today + new forecast dates queried. Old dates frozen (no re-queries). Today: Departed updated, Scheduled preserved. New dates: Scheduled from fresh API, Departed=0. Scans every 12h (2x/day). Minimal API cost (~6-8 calls/scan).",
   "airlines": [
     {
       "id": "emirates", "name": "Emirates", "iata": "EK", "hub": "DXB",
@@ -32,13 +32,12 @@
     }
   ],
   "flightVolumeHistory": [
-    { "date": "2026-03-29", "emirates_scheduled": 156, "emirates_departed": 0, "qatar_scheduled": 111, "qatar_departed": 0, "etihad_scheduled": 78, "etihad_departed": 0 },
-    { "date": "2026-03-30", "emirates_scheduled": 158, "emirates_departed": 0, "qatar_scheduled": 249, "qatar_departed": 0, "etihad_scheduled": 81, "etihad_departed": 0 },
-    { "date": "2026-03-31", "emirates_scheduled": 158, "emirates_departed": 0, "qatar_scheduled": 261, "qatar_departed": 0, "etihad_scheduled": 81, "etihad_departed": 0 },
-    { "date": "2026-04-01", "emirates_scheduled": 163, "emirates_departed": 0, "qatar_scheduled": 266, "qatar_departed": 0, "etihad_scheduled": 101, "etihad_departed": 0 },
-    { "date": "2026-04-02", "emirates_scheduled": 161, "emirates_departed": 0, "qatar_scheduled": 267, "qatar_departed": 0, "etihad_scheduled": 119, "etihad_departed": 0 },
-    { "date": "2026-04-03", "emirates_scheduled": 161, "emirates_departed": 0, "qatar_scheduled": 269, "qatar_departed": 0, "etihad_scheduled": 104, "etihad_departed": 0 },
-    { "date": "2026-04-04", "emirates_scheduled": 161, "emirates_departed": 0, "qatar_scheduled": 270, "qatar_departed": 0, "etihad_scheduled": 104, "etihad_departed": 0 },
+    { "date": "2026-03-30", "emirates_scheduled": 0, "emirates_departed": 0, "qatar_scheduled": 0, "qatar_departed": 0, "etihad_scheduled": 0, "etihad_departed": 0 },
+    { "date": "2026-03-31", "emirates_scheduled": 0, "emirates_departed": 0, "qatar_scheduled": 0, "qatar_departed": 0, "etihad_scheduled": 0, "etihad_departed": 0 },
+    { "date": "2026-04-01", "emirates_scheduled": 0, "emirates_departed": 0, "qatar_scheduled": 0, "qatar_departed": 0, "etihad_scheduled": 0, "etihad_departed": 0 },
+    { "date": "2026-04-02", "emirates_scheduled": 0, "emirates_departed": 0, "qatar_scheduled": 0, "qatar_departed": 0, "etihad_scheduled": 0, "etihad_departed": 0 },
+    { "date": "2026-04-03", "emirates_scheduled": 0, "emirates_departed": 0, "qatar_scheduled": 0, "qatar_departed": 0, "etihad_scheduled": 0, "etihad_departed": 0 },
+    { "date": "2026-04-04", "emirates_scheduled": 0, "emirates_departed": 0, "qatar_scheduled": 0, "qatar_departed": 0, "etihad_scheduled": 0, "etihad_departed": 0 },
     { "date": "2026-04-05", "emirates_scheduled": 0, "emirates_departed": 0, "qatar_scheduled": 0, "qatar_departed": 0, "etihad_scheduled": 0, "etihad_departed": 0 }
   ]
 }
