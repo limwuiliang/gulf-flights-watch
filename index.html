@@ -96,11 +96,11 @@
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
         <div>
           <h2 class="font-semibold" style="color:#2c3e2d;">Flight Volume Trend</h2>
-          <p class="text-xs" style="color:#a0948a;">Mar 29 onwards — Expected vs Departed flights</p>
+          <p class="text-xs" style="color:#a0948a;">Mar 29 onwards — Total Scheduled vs Departed flights</p>
         </div>
         <div class="flex flex-wrap gap-2">
           <button id="status-all" class="px-3 py-1 rounded text-xs font-medium text-white" style="background:#4a7c59;" onclick="filterChartByStatus('all')">All</button>
-          <button id="status-expected" class="px-3 py-1 rounded text-xs font-medium" style="background:#ede8e1;color:#5c5040;border:1px solid #c8bfb4;" onclick="filterChartByStatus('expected')">Expected</button>
+          <button id="status-expected" class="px-3 py-1 rounded text-xs font-medium" style="background:#ede8e1;color:#5c5040;border:1px solid #c8bfb4;" onclick="filterChartByStatus('expected')">Scheduled</button>
           <button id="status-departed" class="px-3 py-1 rounded text-xs font-medium" style="background:#ede8e1;color:#5c5040;border:1px solid #c8bfb4;" onclick="filterChartByStatus('departed')">Departed</button>
         </div>
       </div>
@@ -266,10 +266,10 @@
       const labels = history.map(d => d.date);
       const datasets = [];
 
-      // Group by airline: Emirates, Qatar, Etihad (each with Expected + Departed)
+      // Group by airline: Emirates, Qatar, Etihad (each with Scheduled + Departed)
       if (currentStatusFilter === 'all' || currentStatusFilter === 'expected') {
         datasets.push(
-          { label: 'Emirates (Expected)', data: history.map(d => d.emirates_expected || 0), borderColor: '#D71921', borderDash: [5,5], backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 3 }
+          { label: 'Emirates (Scheduled)', data: history.map(d => d.emirates_expected || 0), borderColor: '#D71921', borderDash: [5,5], backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 3 }
         );
       }
       if (currentStatusFilter === 'all' || currentStatusFilter === 'departed') {
@@ -280,7 +280,7 @@
       
       if (currentStatusFilter === 'all' || currentStatusFilter === 'expected') {
         datasets.push(
-          { label: 'Qatar (Expected)', data: history.map(d => d.qatar_expected || 0), borderColor: '#5C0632', borderDash: [5,5], backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 3 }
+          { label: 'Qatar (Scheduled)', data: history.map(d => d.qatar_expected || 0), borderColor: '#5C0632', borderDash: [5,5], backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 3 }
         );
       }
       if (currentStatusFilter === 'all' || currentStatusFilter === 'departed') {
@@ -291,7 +291,7 @@
       
       if (currentStatusFilter === 'all' || currentStatusFilter === 'expected') {
         datasets.push(
-          { label: 'Etihad (Expected)', data: history.map(d => d.etihad_expected || 0), borderColor: '#B8860B', borderDash: [5,5], backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 3 }
+          { label: 'Etihad (Scheduled)', data: history.map(d => d.etihad_expected || 0), borderColor: '#B8860B', borderDash: [5,5], backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 3 }
         );
       }
       if (currentStatusFilter === 'all' || currentStatusFilter === 'departed') {
