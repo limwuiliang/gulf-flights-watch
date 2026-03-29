@@ -4,124 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gulf Flights Watch Live</title>
-  <script src="https://cdn.tailwindcss.com">
-    // Chart status filter
-    let currentStatusFilter = 'all';
-    function filterChartByStatus(status) {
-      currentStatusFilter = status;
-      updateChartByStatus();
-      document.getElementById('status-all').style.background = status === 'all' ? '#4a7c59' : '#ede8e1';
-      document.getElementById('status-all').style.color = status === 'all' ? '#fff' : '#5c5040';
-      document.getElementById('status-expected').style.background = status === 'expected' ? '#4a7c59' : '#ede8e1';
-      document.getElementById('status-expected').style.color = status === 'expected' ? '#fff' : '#5c5040';
-      document.getElementById('status-departed').style.background = status === 'departed' ? '#4a7c59' : '#ede8e1';
-      document.getElementById('status-departed').style.color = status === 'departed' ? '#fff' : '#5c5040';
-    }
-
-    function updateChartByStatus() {
-      if (!scanData || !scanData.flightVolumeHistory) return;
-      const history = scanData.flightVolumeHistory;
-      const labels = history.map(d => d.date);
-      const datasets = [];
-
-      if (currentStatusFilter === 'all' || currentStatusFilter === 'expected') {
-        datasets.push(
-          { label: 'Emirates (Expected)', data: history.map(d => d.emirates_expected || 0), borderColor: '#D71921', borderDash: [5,5], backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 3 },
-          { label: 'Qatar (Expected)', data: history.map(d => d.qatar_expected || 0), borderColor: '#5C0632', borderDash: [5,5], backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 3 },
-          { label: 'Etihad (Expected)', data: history.map(d => d.etihad_expected || 0), borderColor: '#B8860B', borderDash: [5,5], backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 3 }
-        );
-      }
-      if (currentStatusFilter === 'all' || currentStatusFilter === 'departed') {
-        datasets.push(
-          { label: 'Emirates (Departed)', data: history.map(d => d.emirates_departed || 0), borderColor: '#D71921', backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 4 },
-          { label: 'Qatar (Departed)', data: history.map(d => d.qatar_departed || 0), borderColor: '#5C0632', backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 4 },
-          { label: 'Etihad (Departed)', data: history.map(d => d.etihad_departed || 0), borderColor: '#B8860B', backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 4 }
-        );
-      }
-
-      const ctx = document.getElementById('volumeChart').getContext('2d');
-      if (volumeChart) volumeChart.destroy();
-
-      volumeChart = new Chart(ctx, {
-        type: 'line',
-        data: { labels, datasets },
-        options: {
-          responsive: true,
-          interaction: { mode: 'index', intersect: false },
-          plugins: {
-            legend: { labels: { color: '#5c5040', font: { size: 11 } }, position: 'bottom' },
-            title: { display: false }
-          },
-          scales: {
-            y: { beginAtZero: true, ticks: { color: '#8a7e72', font: { size: 10 } }, grid: { color: '#e0dbd4' } },
-            x: { ticks: { color: '#8a7e72', font: { size: 10 } }, grid: { color: '#e0dbd4' } }
-          }
-        }
-      });
-    }
-
-    const origRenderChart = renderChart;
-    renderChart = function() { updateChartByStatus(); };
-</script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
-    // Chart status filter
-    let currentStatusFilter = 'all';
-    function filterChartByStatus(status) {
-      currentStatusFilter = status;
-      updateChartByStatus();
-      document.getElementById('status-all').style.background = status === 'all' ? '#4a7c59' : '#ede8e1';
-      document.getElementById('status-all').style.color = status === 'all' ? '#fff' : '#5c5040';
-      document.getElementById('status-expected').style.background = status === 'expected' ? '#4a7c59' : '#ede8e1';
-      document.getElementById('status-expected').style.color = status === 'expected' ? '#fff' : '#5c5040';
-      document.getElementById('status-departed').style.background = status === 'departed' ? '#4a7c59' : '#ede8e1';
-      document.getElementById('status-departed').style.color = status === 'departed' ? '#fff' : '#5c5040';
-    }
-
-    function updateChartByStatus() {
-      if (!scanData || !scanData.flightVolumeHistory) return;
-      const history = scanData.flightVolumeHistory;
-      const labels = history.map(d => d.date);
-      const datasets = [];
-
-      if (currentStatusFilter === 'all' || currentStatusFilter === 'expected') {
-        datasets.push(
-          { label: 'Emirates (Expected)', data: history.map(d => d.emirates_expected || 0), borderColor: '#D71921', borderDash: [5,5], backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 3 },
-          { label: 'Qatar (Expected)', data: history.map(d => d.qatar_expected || 0), borderColor: '#5C0632', borderDash: [5,5], backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 3 },
-          { label: 'Etihad (Expected)', data: history.map(d => d.etihad_expected || 0), borderColor: '#B8860B', borderDash: [5,5], backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 3 }
-        );
-      }
-      if (currentStatusFilter === 'all' || currentStatusFilter === 'departed') {
-        datasets.push(
-          { label: 'Emirates (Departed)', data: history.map(d => d.emirates_departed || 0), borderColor: '#D71921', backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 4 },
-          { label: 'Qatar (Departed)', data: history.map(d => d.qatar_departed || 0), borderColor: '#5C0632', backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 4 },
-          { label: 'Etihad (Departed)', data: history.map(d => d.etihad_departed || 0), borderColor: '#B8860B', backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 4 }
-        );
-      }
-
-      const ctx = document.getElementById('volumeChart').getContext('2d');
-      if (volumeChart) volumeChart.destroy();
-
-      volumeChart = new Chart(ctx, {
-        type: 'line',
-        data: { labels, datasets },
-        options: {
-          responsive: true,
-          interaction: { mode: 'index', intersect: false },
-          plugins: {
-            legend: { labels: { color: '#5c5040', font: { size: 11 } }, position: 'bottom' },
-            title: { display: false }
-          },
-          scales: {
-            y: { beginAtZero: true, ticks: { color: '#8a7e72', font: { size: 10 } }, grid: { color: '#e0dbd4' } },
-            x: { ticks: { color: '#8a7e72', font: { size: 10 } }, grid: { color: '#e0dbd4' } }
-          }
-        }
-      });
-    }
-
-    const origRenderChart = renderChart;
-    renderChart = function() { updateChartByStatus(); };
-</script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
     body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f4f1ec; }
     /* Status cards — earthy/nature tones */
@@ -444,6 +328,63 @@
       renderRows(allRows);
     }
 
+    function filterChartByStatus(status) {
+      currentStatusFilter = status;
+      updateChartByStatus();
+      document.getElementById('status-all').style.background = status === 'all' ? '#4a7c59' : '#ede8e1';
+      document.getElementById('status-all').style.color = status === 'all' ? '#fff' : '#5c5040';
+      document.getElementById('status-expected').style.background = status === 'expected' ? '#4a7c59' : '#ede8e1';
+      document.getElementById('status-expected').style.color = status === 'expected' ? '#fff' : '#5c5040';
+      document.getElementById('status-departed').style.background = status === 'departed' ? '#4a7c59' : '#ede8e1';
+      document.getElementById('status-departed').style.color = status === 'departed' ? '#fff' : '#5c5040';
+    }
+
+    function updateChartByStatus() {
+      if (!scanData || !scanData.flightVolumeHistory) return;
+      const history = scanData.flightVolumeHistory;
+      const labels = history.map(d => d.date);
+      const datasets = [];
+
+      if (currentStatusFilter === 'all' || currentStatusFilter === 'expected') {
+        datasets.push(
+          { label: 'Emirates (Expected)', data: history.map(d => d.emirates_expected || 0), borderColor: '#D71921', borderDash: [5,5], backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 3 },
+          { label: 'Qatar (Expected)', data: history.map(d => d.qatar_expected || 0), borderColor: '#5C0632', borderDash: [5,5], backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 3 },
+          { label: 'Etihad (Expected)', data: history.map(d => d.etihad_expected || 0), borderColor: '#B8860B', borderDash: [5,5], backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 3 }
+        );
+      }
+      if (currentStatusFilter === 'all' || currentStatusFilter === 'departed') {
+        datasets.push(
+          { label: 'Emirates (Departed)', data: history.map(d => d.emirates_departed || 0), borderColor: '#D71921', backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 4 },
+          { label: 'Qatar (Departed)', data: history.map(d => d.qatar_departed || 0), borderColor: '#5C0632', backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 4 },
+          { label: 'Etihad (Departed)', data: history.map(d => d.etihad_departed || 0), borderColor: '#B8860B', backgroundColor: 'transparent', fill: false, tension: 0.4, pointRadius: 4 }
+        );
+      }
+
+      const ctx = document.getElementById('volumeChart').getContext('2d');
+      if (volumeChart) volumeChart.destroy();
+
+      volumeChart = new Chart(ctx, {
+        type: 'line',
+        data: { labels, datasets },
+        options: {
+          responsive: true,
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: { labels: { color: '#5c5040', font: { size: 11 } }, position: 'bottom' },
+            title: { display: false }
+          },
+          scales: {
+            y: { beginAtZero: true, ticks: { color: '#8a7e72', font: { size: 10 } }, grid: { color: '#e0dbd4' } },
+            x: { ticks: { color: '#8a7e72', font: { size: 10 } }, grid: { color: '#e0dbd4' } }
+          }
+        }
+      });
+    }
+
+    function renderChart() {
+      updateChartByStatus();
+    }
+
     function renderRows(rows) {
       const tbody = document.getElementById('flights-tbody');
       document.getElementById('row-count').textContent = rows.length + ' row' + (rows.length !== 1 ? 's' : '');
@@ -492,12 +433,7 @@
     //  Chart
     // ─────────────────────────────────────────────
     let volumeChart = null;
-    const AIRLINE_COLORS = {
-      emirates: { border: '#D71921', bg: 'rgba(215,25,33,0.1)' },
-      qatar:    { border: '#5C0632', bg: 'rgba(92,6,50,0.1)'  },
-      etihad:   { border: '#B8860B', bg: 'rgba(184,134,11,0.1)' },
-    };
-    const AIRLINE_LABELS = { emirates: 'Emirates', qatar: 'Qatar Airways', etihad: 'Etihad' };
+    let currentStatusFilter = 'all';
 
     
     // Chart status filter
