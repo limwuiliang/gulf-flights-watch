@@ -217,6 +217,8 @@
     // ─────────────────────────────────────────────
     let scanData = null;
 
+    document.addEventListener('DOMContentLoaded', loadData);
+
     async function loadData() {
       try {
         const res = await fetch('./data/scan_results.json?v=' + Date.now());
