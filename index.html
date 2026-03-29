@@ -186,33 +186,26 @@
       allRows = [];
       const minDateStr = '2026-03-29';
       const maxDateStr = '2026-04-05';
-      let skipped = 0;
-      let included = 0;
       
-      console.log(`Starting renderTable: min=${minDateStr}, max=${maxDateStr}`);
-      console.log(`scanData.airlines count: ${scanData.airlines.length}`);
-      
+      // Collect all flights
       for (const a of scanData.airlines) {
-        console.log(`  ${a.name}: ${a.flights.length} flights`);
         for (const f of (a.flights || [])) {
-          const d = (f.date || '').trim();
-          // Only include flights within window (Mar 29 - Apr 5)
-          if (d >= minDateStr && d <= maxDateStr) {
-            allRows.push({ airline: a, flight: f, date: d });
-            included++;
-          } else {
-            skipped++;
-          }
+          allRows.push({ airline: a, flight: f, date: f.date });
         }
       }
       
-      console.log(`Loaded ${included} flights in window, skipped ${skipped} outside range. Total allRows: ${allRows.length}`);
+      console.log(`[renderTable] Total flights loaded: ${allRows.length}`);
+      
+      // Filter to window for initial display
+      const windowFiltered = allRows.filter(r => r.date >= minDateStr && r.date <= maxDateStr);
+      console.log(`[renderTable] After date filter (${minDateStr} to ${maxDateStr}): ${windowFiltered.length} flights`);
       
       // Set date filter bounds
       document.getElementById('filter-date').min = minDateStr;
       document.getElementById('filter-date').max = maxDateStr;
       
-      renderRows(allRows);
+      // Render the filtered view
+      renderRows(windowFiltered);
     }
 
     function renderRows(rows) {
@@ -246,12 +239,16 @@
     }
 
     function applyFilters() {
+      const minDateStr = '2026-03-29';
+      const maxDateStr = '2026-04-05';
       const airline = document.getElementById('filter-airline').value;
       const cat = document.getElementById('filter-category').value;
       const dest = (document.getElementById('filter-dest').value || '').trim().toLowerCase();
       const date = document.getElementById('filter-date').value;
 
       const filtered = allRows.filter(r => {
+        // Always apply window filter (Mar 29 - Apr 5)
+        if (r.date < minDateStr || r.date > maxDateStr) return false;
         if (airline !== 'all' && r.airline.id !== airline) return false;
         if (cat !== 'all' && r.flight.category !== cat) return false;
         if (dest && !(r.flight.destination.toLowerCase().includes(dest) || (r.flight.destinationName || '').toLowerCase().includes(dest))) return false;
