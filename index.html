@@ -44,7 +44,7 @@
           <option value="qatar">Qatar</option>
           <option value="etihad">Etihad</option>
         </select>
-        <input id="filter-date" type="date" style="border:1px solid #d6cfc4;color:#3d3530;" onchange="applyFilters()" class="px-3 py-1.5 rounded text-sm" min="2026-03-29" max="2026-04-05" />
+        <input id="filter-date" type="date" style="border:1px solid #d6cfc4;color:#3d3530;" onchange="applyFilters()" class="px-3 py-1.5 rounded text-sm" />
         <button onclick="clearFilters()" class="px-3 py-1.5 rounded text-sm font-medium" style="background:#ede8e1;color:#5c5040;border:1px solid #c8bfb4;">Clear</button>
       </div>
     </section>
@@ -114,8 +114,18 @@
     let volumeChart = null;
     let currentStatusFilter = 'all';
 
-    const MIN_DATE = '2026-03-29';
-    const MAX_DATE = '2026-04-05';
+    // Chart: anchored at Mar 29 (never changes)
+    const CHART_MIN_DATE = '2026-03-29';
+    const CHART_MAX_DATE = '2026-04-05';
+
+    // Intel table: Today + 6 days (rolling 7-day window)
+    function getTableDateRange() {
+      const today = new Date('2026-03-30'); // Today in this scenario
+      const minDate = today.toISOString().slice(0, 10);
+      const maxDate = new Date(today.getTime() + 6 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+      return { min: minDate, max: maxDate };
+    }
+    const tableRange = getTableDateRange();
 
     document.addEventListener('DOMContentLoaded', async function() {
       try {
@@ -134,6 +144,10 @@
     });
 
     function loadData() {
+      // Set date filter bounds
+      document.getElementById('filter-date').min = tableRange.min;
+      document.getElementById('filter-date').max = tableRange.max;
+      
       renderLastScan();
       renderCards();
       buildFlightsList();
@@ -170,12 +184,12 @@
       for (const a of scanData.airlines) {
         for (const f of (a.flights || [])) {
           const date = f.date || '';
-          if (date >= MIN_DATE && date <= MAX_DATE) {
+          if (date >= tableRange.min && date <= tableRange.max) {
             allFlights.push({ airline: a, flight: f, date: date });
           }
         }
       }
-      console.log(`Loaded ${allFlights.length} flights in window (${MIN_DATE} to ${MAX_DATE})`);
+      console.log(`Loaded ${allFlights.length} flights (${tableRange.min} to ${tableRange.max})`);
     }
 
     function renderTable() {
@@ -267,7 +281,7 @@
 
     function updateChart() {
       if (!scanData || !scanData.flightVolumeHistory) return;
-      const history = scanData.flightVolumeHistory.filter(d => d.date >= MIN_DATE && d.date <= MAX_DATE);
+      const history = scanData.flightVolumeHistory.filter(d => d.date >= CHART_MIN_DATE && d.date <= CHART_MAX_DATE);
       const labels = history.map(d => d.date);
       const datasets = [];
 
