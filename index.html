@@ -185,11 +185,22 @@
 
     function renderTable() {
       allRows = [];
-      const today = new Date().toISOString().slice(0, 10);
+      // Filter to Today + 6 days (7-day rolling window)
+      const today = new Date('2026-03-30'); // Today in this scenario
+      const minDate = today.toISOString().slice(0, 10);
+      const maxDate = new Date(today.getTime() + 6 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+      
+      // Set date filter bounds
+      document.getElementById('filter-date').min = minDate;
+      document.getElementById('filter-date').max = maxDate;
+      
       for (const a of scanData.airlines) {
         for (const f of (a.flights || [])) {
           const d = f.date || scanData.lastScan.slice(0, 10);
-          allRows.push({ airline: a, flight: f, date: d });
+          // Only include flights within Today + 6 days
+          if (d >= minDate && d <= maxDate) {
+            allRows.push({ airline: a, flight: f, date: d });
+          }
         }
       }
       renderRows(allRows);
