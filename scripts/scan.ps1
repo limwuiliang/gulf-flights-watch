@@ -142,12 +142,31 @@ foreach ($q in $queries) {
 }
 
 $timestamp = [System.DateTime]::UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ")
-$ekJson  = ($byAirline.emirates | ConvertTo-Json -Depth 4 -Compress)
-$qrJson  = ($byAirline.qatar    | ConvertTo-Json -Depth 4 -Compress)
-$eyJson  = ($byAirline.etihad   | ConvertTo-Json -Depth 4 -Compress)
-if ($byAirline.emirates.Count -eq 1) { $ekJson = "[$ekJson]" }
-if ($byAirline.qatar.Count -eq 1)    { $qrJson = "[$qrJson]" }
-if ($byAirline.etihad.Count -eq 1)   { $eyJson = "[$eyJson]" }
+
+# Convert flights to JSON arrays (handle empty and single-item cases)
+$ekJson = if ($byAirline.emirates.Count -eq 0) {
+  "[]"
+} elseif ($byAirline.emirates.Count -eq 1) {
+  "[" + (ConvertTo-Json -InputObject $byAirline.emirates[0] -Depth 4 -Compress) + "]"
+} else {
+  ConvertTo-Json -InputObject @($byAirline.emirates) -Depth 4 -Compress
+}
+
+$qrJson = if ($byAirline.qatar.Count -eq 0) {
+  "[]"
+} elseif ($byAirline.qatar.Count -eq 1) {
+  "[" + (ConvertTo-Json -InputObject $byAirline.qatar[0] -Depth 4 -Compress) + "]"
+} else {
+  ConvertTo-Json -InputObject @($byAirline.qatar) -Depth 4 -Compress
+}
+
+$eyJson = if ($byAirline.etihad.Count -eq 0) {
+  "[]"
+} elseif ($byAirline.etihad.Count -eq 1) {
+  "[" + (ConvertTo-Json -InputObject $byAirline.etihad[0] -Depth 4 -Compress) + "]"
+} else {
+  ConvertTo-Json -InputObject @($byAirline.etihad) -Depth 4 -Compress
+}
 
 # Merge strategy (optimized for incremental scans):
 # - PRESERVE: All existing dates (Scheduled + Departed both frozen)
