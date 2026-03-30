@@ -216,6 +216,13 @@
     function renderLastScan() {
       const d = new Date(scanData.lastScan);
       document.getElementById('last-scan-label').textContent = 'Last scan: ' + d.toLocaleString('en-SG', { timeZone: 'Asia/Singapore', dateStyle: 'medium', timeStyle: 'short' });
+      
+      // Set date filter bounds: today to today + 6 days
+      const today = new Date('2026-03-30');
+      const minDate = today.toISOString().split('T')[0];
+      const maxDate = new Date(today.getTime() + 6 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      document.getElementById('filter-date').min = minDate;
+      document.getElementById('filter-date').max = maxDate;
     }
 
     function renderCards() {
