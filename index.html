@@ -245,10 +245,18 @@
 
     function renderTable() {
       allRows = [];
+      // Filter to Today + 6 days window (Mar 30 - Apr 5)
+      const today = new Date('2026-03-30');
+      const minDate = today.toISOString().split('T')[0];
+      const maxDate = new Date(today.getTime() + 6 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      
       for (const a of scanData.airlines) {
         for (const f of (a.flights || [])) {
           const d = f.date || scanData.lastScan.slice(0, 10);
-          allRows.push({ airline: a, flight: f, date: d });
+          // Only include flights within the window
+          if (d >= minDate && d <= maxDate) {
+            allRows.push({ airline: a, flight: f, date: d });
+          }
         }
       }
       renderRows(allRows);
